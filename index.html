@@ -685,8 +685,28 @@ th.cs-sort[data-dir]::after{content:attr(data-dir);margin-left:4px;color:var(--b
 .cs-ok{color:var(--ok);font-weight:600}.cs-bad{color:var(--danger);font-weight:600}.cs-warn{color:var(--pend);font-weight:600}
 .cs-tbar{display:inline-block;height:6px;border-radius:3px;background:var(--brand);vertical-align:middle;margin-right:6px}
 .cs-sub{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:-6px 0 18px}
+body.wide main{max-width:1560px}
+.cs-tb td,.cs-tb th{padding-left:8px;padding-right:8px}
+.cs-tb .cs-as{max-width:320px}
+.cs-tb th:last-child,.cs-tb td:last-child{position:sticky;right:0;background:#fff;box-shadow:-8px 0 8px -8px rgba(20,40,50,.18)}
+.cs-tb tr.cs-chk td:last-child{opacity:1}
 @media (max-width:960px){.cs-grid2{grid-template-columns:1fr}.cs-sem{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:640px){.cs-sem{grid-template-columns:1fr 1fr}.cs-dr{grid-template-columns:110px 1fr 44px}}
+.rp-step{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;background:#fff}
+.rp-step h3{margin:0 0 10px;font-size:15px;display:flex;align-items:center;gap:10px}
+.rp-step h3 .n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font-size:12.5px}
+.rp-step.off{opacity:.55;pointer-events:none}
+.rp-list{max-height:340px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:10px}
+.rp-it{display:grid;grid-template-columns:120px 1fr 160px 110px;gap:12px;align-items:center;width:100%;text-align:left;appearance:none;border:0;border-bottom:1px solid var(--line);background:#fff;padding:10px 12px;cursor:pointer;font:inherit;color:inherit}
+.rp-it:last-child{border-bottom:0}.rp-it:hover{background:var(--brand-soft)}
+.rp-it small{display:block;color:var(--muted);font-size:12.5px}
+.rp-sel{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid #B9DDC6;background:var(--ok-soft);border-radius:10px;padding:12px 14px}
+.rp-sum{max-width:460px;font-size:13.5px;line-height:1.45;white-space:pre-wrap}
+.rp-tag{display:inline-block;font-size:12px;font-weight:600;background:var(--brand-soft);color:var(--brand);border-radius:8px;padding:2px 8px;white-space:nowrap}
+.rp-tag.off{background:var(--sunk);color:var(--muted)}
+.rp-mx td,.rp-mx th{text-align:center}.rp-mx td:first-child,.rp-mx th:first-child{text-align:left}
+.rp-hm{display:inline-block;min-width:30px;padding:2px 6px;border-radius:6px;font-weight:600}
+@media (max-width:760px){.rp-it{grid-template-columns:1fr;gap:4px}}
 </style>
 
 </head>
@@ -801,7 +821,7 @@ async function boot(){
   showUser();
   try{await loadLatest(G.admin?OPS:[G.op])}catch(e){screen(`<h1>No se pudieron cargar los datos</h1><p>${esc(e.message)}</p><button class="btn" onclick="location.reload()">Intentar de nuevo</button>`);return}
   live();
-  M=location.hash==='#casos'?'casos':'home';
+  M=location.hash==='#casos'?'casos':location.hash==='#reprocesos'&&G.admin?'reproc':'home';
   render();
 }
 sb.auth.onAuthStateChange((ev)=>{if(ev==='SIGNED_OUT')location.replace(redirectTo())});
@@ -821,13 +841,15 @@ const ICO={
   home:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>'
 };
 function modNav(){
-  $('modslot').innerHTML=`<nav class="modsw" aria-label="Módulos"><button aria-pressed="${M==='home'}" onclick="irMod('home')">${ICO.home}Inicio</button><button aria-pressed="${M==='casos'}" onclick="irMod('casos')">Casos</button></nav>`;
+  $('modslot').innerHTML=`<nav class="modsw" aria-label="Módulos"><button aria-pressed="${M==='home'}" onclick="irMod('home')">${ICO.home}Inicio</button><button aria-pressed="${M==='casos'}" onclick="irMod('casos')">Casos</button>${G.admin?`<button aria-pressed="${M==='reproc'}" onclick="irMod('reproc')">Reprocesos</button>`:''}</nav>`;
 }
-function irMod(m,tab){M=m;if(tab)V.tab=tab;history.replaceState(null,'',m==='casos'?'#casos':location.pathname);render();scrollTo(0,0)}
+function irMod(m,tab){M=m;if(tab)V.tab=tab;history.replaceState(null,'',m==='casos'?'#casos':m==='reproc'?'#reprocesos':location.pathname);render();scrollTo(0,0)}
 function render(keep){
   modNav();
+  document.body.classList.toggle('wide',M==='casos'||M==='reproc');
   Object.values(K.charts).forEach(c=>c.destroy());K.charts={};
   if(M==='home')return renderHome();
+  if(M==='reproc')return renderReproc();
   return renderCasos(keep);
 }
 
@@ -859,6 +881,7 @@ async function renderHome(){
      <div class="mod-st"><div><strong>${rows.length}</strong><span>${G.admin?'Abiertos del equipo':'Casos abiertos'}</span></div><div><strong>${c.urgente}</strong><span>Urgentes</span></div><div><strong>${c.hoy}</strong><span>Para hoy</span></div></div>
      <span class="mod-go">Abrir <span aria-hidden="true">→</span></span></button>
     <div class="mod-lk">${links.map(([l,t])=>`<button onclick="irMod('casos','${t}')">${l}</button>`).join('')}</div></article>`;
+  homeReproc();
   const p=[];
   if(c.urgente)p.push(['p-warn',`${plural(c.urgente,'caso lleva','casos llevan')} 4 o más días hábiles asignado${c.urgente===1?'':'s'}`,G.admin?'equipo':'mis','urgente']);
   if(c.hoy)p.push(['p-warn',`${plural(c.hoy,'caso cumple','casos cumplen')} hoy 3 días hábiles: hay que darle${c.hoy===1?'':'s'} seguimiento`,G.admin?'equipo':'mis','hoy']);
@@ -913,7 +936,7 @@ function tablero(raw,asOf,o){
    <div class="cs-sem">${sem.map(([k,l,n,col])=>`<button style="--c:${col}" aria-pressed="${V.st===k}" onclick="V.st='${k}';drawT()"><strong>${n}</strong><span>${l}</span></button>`).join('')}</div>
    <div class="cs-bar"><input type="search" class="grow" id="tq" placeholder="Buscar cliente, póliza o número de caso" value="${esc(V.q)}" oninput="V.q=this.value;drawT()">
     <select id="tc" onchange="V.cls=this.value;drawT()"><option value="">Todas las clases</option>${ce.map(([n])=>`<option ${V.cls===n?'selected':''}>${esc(n)}</option>`).join('')}</select></div>
-   <div class="tbl"><table><thead><tr>${[['no','No.'],['poliza','Póliza'],['cliente','Cliente'],...(o.ops?[['op','Persona']]:[]),['clase','Clase'],['fa','Asignado'],['dias','Días háb.'],['creado','Días creado'],['est','Estado']].map(([k,l])=>`<th class="cs-sort" data-k="${k}" onclick="sortT('${k}')">${l}</th>`).join('')}<th>Revisado</th></tr></thead><tbody id="tb"></tbody></table></div>
+   <div class="tbl"><table class="cs-tb"><thead><tr>${[['no','No.'],['poliza','Póliza'],['cliente','Cliente'],...(o.ops?[['op','Persona']]:[]),['clase','Clase'],['fa','Asignado'],['dias','Días háb.'],['creado','Días creado'],['est','Estado']].map(([k,l])=>`<th class="cs-sort" data-k="${k}" onclick="sortT('${k}')">${l}</th>`).join('')}<th>Revisado</th></tr></thead><tbody id="tb"></tbody></table></div>
    <section class="cs-sec"><h2>Distribución por clase</h2><div class="cs-dist">${ce.length?ce.map(([n,k])=>`<div class="cs-dr"><span>${esc(n)}</span><div class="tr"><div class="fl" style="width:${Math.max(3,k/mx*100)}%"></div></div><b>${k}</b></div>`).join(''):'<p class="empty">Sin datos.</p>'}</div></section>
    <section class="cs-sec"><div class="cs-why"><p><b>Urgente:</b> 4 o más días hábiles desde la fecha de asignación (el día de asignación cuenta como día 1; sábados y domingos no cuentan).</p><p><b>Seguimiento hoy:</b> hoy se cumplen exactamente 3 días hábiles.</p><p><b>En riesgo:</b> la clase no es renovación y pasaron más de 10 días calendario desde la creación.</p><p><b>Al día:</b> todo lo demás. Los casos revisados se ven atenuados y quedan al final de la lista.</p></div></section>`;
   drawT();
@@ -968,17 +991,17 @@ function engine(H){
   }
   return{cases,dOp,lastOp};
 }
-function rango(first){
+function rango(first,S=A){
   const h=hoyD(),y=h.getFullYear(),m=h.getMonth();let f,t=tISO(h);
   const back=n=>{const d=new Date(h);d.setDate(d.getDate()-n+1);return tISO(d)};
-  switch(A.per){
+  switch(S.per){
     case'7':f=back(7);break;case'30':f=back(30);break;case'90':f=back(90);break;
     case'mes':f=tISO(new Date(y,m,1));break;
     case'mesant':f=tISO(new Date(y,m-1,1));t=tISO(new Date(y,m,0));break;
     case'trim':f=tISO(new Date(y,Math.floor(m/3)*3,1));break;
     case'anio':f=tISO(new Date(y,0,1));break;
     case'todo':f=first||tISO(h);break;
-    default:f=A.desde||back(30);t=A.hasta||t;
+    default:f=S.desde||back(30);t=S.hasta||t;
   }
   const fd=pISO(f),td=pISO(t),len=dCal(fd,td)+1,pt=new Date(fd);pt.setDate(pt.getDate()-1);const pf=new Date(pt);pf.setDate(pf.getDate()-len+1);
   return{f,t,pf:tISO(pf),pt:tISO(pt),len};
@@ -1190,6 +1213,203 @@ async function subir(){
     s.textContent=`Listo: ${tot} casos subidos.`;toast('Datos subidos.');K.hist=null;EQ_DATES=null;await loadLatest(OPS);
   }catch(e){s.textContent='Error: '+e.message}
   b.disabled=false;
+}
+
+
+/* =====================================================================
+   REPROCESOS (solo admin)
+   ===================================================================== */
+const RP={tab:'resumen',per:'30',desde:'',hasta:'',quien:'all',tipo:'',q:'',f:null};
+const RPD={tipos:null,regs:null};
+const ICO_RP='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg>';
+async function rpTipos(force){if(RPD.tipos&&!force)return RPD.tipos;const{data,error}=await sb.from('reproceso_tipos').select('*').order('nombre');if(error)throw error;return RPD.tipos=data}
+async function rpRegs(force){if(RPD.regs&&!force)return RPD.regs;RPD.regs=await paged(()=>sb.from('reprocesos').select('*').order('fecha',{ascending:false}).order('id',{ascending:false}));return RPD.regs}
+const rpTipoN=r=>(RPD.tipos||[]).find(t=>t.id===r.tipo_id)?.nombre||r.tipo_nombre;
+const rpNewForm=()=>({id:null,op:'',caso:null,q:'',manual:false,tipo:'',fecha:hoyISO(),resumen:''});
+
+const RP_TABS=[['resumen','Resumen'],['registros','Registros'],['nuevo','Agregar reproceso'],['tipos','Tipos de reproceso']];
+function renderReproc(){
+  if(!G.admin){M='home';return render()}
+  const tabs=`<div class="tabs" role="tablist">${RP_TABS.map(([id,l])=>`<button class="tab" role="tab" aria-selected="${RP.tab===id}" onclick="rpTab('${id}')">${id==='nuevo'&&RP.f?.id?'Editar reproceso':l}</button>`).join('')}</div>`;
+  $('app').innerHTML=`<div class="fade"><div class="cs-sub"><h1 style="margin:0">Reprocesos</h1><button class="btn primary" onclick="rpNuevo()">+ Agregar reproceso</button></div>${tabs}<div id="rp-body"><div class="loader"><span class="spin"></span><p class="muted">Cargando…</p></div></div></div>`;
+  const f={resumen:rpResumen,registros:rpRegistros,nuevo:rpForm,tipos:rpTiposTab}[RP.tab]||rpResumen;
+  f().catch(e=>{console.error(e);$('rp-body').innerHTML=`<div class="err">No se pudieron cargar los reprocesos: ${esc(e.message)}. Revisa que hayas corrido el SQL del módulo en Supabase.</div>`});
+}
+function rpTab(t){if(t==='nuevo'&&!RP.f)RP.f=rpNewForm();if(t!=='nuevo')RP.f=null;RP.tab=t;if(M!=='reproc')irMod('reproc');else render()}
+function rpNuevo(){RP.f=rpNewForm();RP.tab='nuevo';if(M!=='reproc')irMod('reproc');else render()}
+
+/* ---------- formulario ---------- */
+async function rpForm(){
+  if(!RP.f)RP.f=rpNewForm();const F=RP.f;
+  const tipos=(await rpTipos()).filter(t=>t.activo||String(t.id)===String(F.tipo));
+  let lista='';
+  if(F.op&&!F.caso&&!F.manual){
+    const E=engine(await loadHist()),q=F.q.trim().toLowerCase();
+    const L=E.cases.filter(c=>c.op===F.op&&(!q||`${c.no} ${c.cliente} ${c.poliza}`.toLowerCase().includes(q))).sort((a,b)=>(b.open-a.open)||(a.last<b.last?1:-1));
+    RP_CAND=L.slice(0,80);
+    lista=`<div class="rp-list">${RP_CAND.map((c,i)=>`<button class="rp-it" onclick="rpPick(${i})">
+      <span class="cs-mono"><b>${esc(c.no)}</b><small>${esc(c.poliza)}</small></span><span><span class="cs-cli">${esc(c.cliente)}</span><small>${esc(c.asunto)}</small></span>
+      <span class="small">${esc(c.clase)}<small>Asignado ${fD(c.fa)}</small></span><span class="small">${c.open?'<span class="cs-st ok">Abierto</span>':`<span class="cs-mut">Cerrado ${fDs(c.close)}</span>`}</span></button>`).join('')||'<p class="empty" style="padding:14px">No hay casos que coincidan.</p>'}
+      ${L.length>80?`<p class="small muted" style="padding:8px 12px;margin:0">Mostrando 80 de ${L.length}. Escribe para buscar.</p>`:''}</div>
+      <button class="lnk" style="margin-top:8px" onclick="RP.f.manual=true;rpForm()">¿No aparece el caso? Escríbelo a mano</button>`;
+  }
+  const sel=F.caso?`<div class="rp-sel"><div><div class="cs-cli">${esc(F.caso.cliente||'(sin cliente)')}</div><div class="cs-as">Caso ${esc(F.caso.no)} · ${esc(F.caso.poliza||'')} · ${esc(F.caso.clase||'')}${F.caso.fa?' · asignado '+fDs(F.caso.fa):''}</div></div><button class="btn sm" onclick="RP.f.caso=null;RP.f.manual=false;rpForm()">Cambiar</button></div>`:'';
+  const manual=F.manual&&!F.caso?`<div class="cs-bar" style="margin-top:6px"><input id="mn-no" placeholder="No. de caso"><input id="mn-po" placeholder="Póliza"><input id="mn-cl" class="grow" placeholder="Cliente"><button class="btn" onclick="rpManual()">Usar este caso</button><button class="lnk" onclick="RP.f.manual=false;rpForm()">Volver a la lista</button></div>`:'';
+  $('rp-body').innerHTML=`
+   ${F.id?'<div class="info">Estás editando un reproceso ya registrado.</div>':''}
+   <div class="rp-step"><h3><span class="n">1</span>¿De quién es el caso?</h3><div class="chips" style="margin:0">${OPS.map(o=>`<button class="chip" aria-pressed="${F.op===o}" onclick="RP.f.op='${o}';RP.f.caso=null;RP.f.q='';RP.f.manual=false;rpForm()">${OPN[o]}</button>`).join('')}</div></div>
+   <div class="rp-step ${F.op?'':'off'}"><h3><span class="n">2</span>¿Qué caso?</h3>
+    ${F.caso?sel:F.manual?manual:F.op?`<input type="search" id="rp-q" placeholder="Buscar por número de caso, cliente o póliza" value="${esc(F.q)}" oninput="RP.f.q=this.value;rpFormDeb()">${lista}`:'<p class="small muted" style="margin:0">Primero elige a la persona.</p>'}</div>
+   <div class="rp-step ${F.caso?'':'off'}"><h3><span class="n">3</span>¿Qué reproceso fue?</h3>
+    ${tipos.length?`<select id="rp-t" onchange="RP.f.tipo=this.value"><option value="">Elige el tipo de reproceso…</option>${tipos.map(t=>`<option value="${t.id}" ${String(F.tipo)===String(t.id)?'selected':''}>${esc(t.nombre)}${t.activo?'':' (quitado)'}</option>`).join('')}</select>`:`<p class="small" style="margin:0">Todavía no hay tipos de reproceso. <button class="lnk" onclick="rpTab('tipos')">Agrégalos aquí</button>.</p>`}</div>
+   <div class="rp-step ${F.caso?'':'off'}"><h3><span class="n">4</span>Resumen</h3>
+    <div class="cs-bar"><label class="small" for="rp-d">Fecha del reproceso</label><input type="date" id="rp-d" value="${F.fecha}" onchange="RP.f.fecha=this.value"></div>
+    <textarea id="rp-r" rows="5" placeholder="Qué pasó, qué se tuvo que corregir y cómo se resolvió." oninput="RP.f.resumen=this.value">${esc(F.resumen)}</textarea></div>
+   <div class="cs-bar"><button class="btn primary" id="rp-save" onclick="rpGuardar()" ${F.caso?'':'disabled'}>${F.id?'Guardar cambios':'Guardar reproceso'}</button><button class="btn" onclick="RP.f=null;rpTab('registros')">Cancelar</button></div>`;
+  const qi=$('rp-q');if(qi&&document.activeElement!==qi&&F.q){qi.focus();qi.setSelectionRange(qi.value.length,qi.value.length)}
+}
+let rpT;function rpFormDeb(){clearTimeout(rpT);rpT=setTimeout(()=>{rpForm();const qi=$('rp-q');if(qi){qi.focus();qi.setSelectionRange(qi.value.length,qi.value.length)}},250)}
+let RP_CAND=[];
+function rpPick(i){const c=RP_CAND[i];RP.f.caso={no:c.no,poliza:c.poliza,cliente:c.cliente,clase:c.clase,asunto:c.asunto,fa:c.faI||null};rpForm()}
+function rpManual(){const no=$('mn-no').value.trim();if(!no){toast('Escribe el número de caso.');return}RP.f.caso={no,poliza:$('mn-po').value.trim(),cliente:$('mn-cl').value.trim(),clase:'',asunto:'',fa:null};rpForm()}
+async function rpGuardar(){
+  const F=RP.f;if(!F?.op||!F.caso){toast('Elige la persona y el caso.');return}
+  if(!F.tipo){toast('Elige el tipo de reproceso.');return}
+  if(!F.resumen.trim()){toast('Escribe el resumen de lo que pasó.');return}
+  const t=RPD.tipos.find(x=>String(x.id)===String(F.tipo));
+  const row={operator:F.op,case_no:F.caso.no,poliza:F.caso.poliza||null,cliente:F.caso.cliente||null,clase:F.caso.clase||null,asunto:F.caso.asunto||null,fecha_asignado:F.caso.fa||null,tipo_id:t.id,tipo_nombre:t.nombre,fecha:F.fecha||hoyISO(),resumen:F.resumen.trim()};
+  $('rp-save').disabled=true;
+  const r=F.id?await sb.from('reprocesos').update({...row,updated_at:new Date().toISOString()}).eq('id',F.id):await sb.from('reprocesos').insert(row);
+  if(r.error){toast('No se pudo guardar: '+r.error.message);$('rp-save').disabled=false;return}
+  toast(F.id?'Reproceso actualizado.':'Reproceso guardado.');RPD.regs=null;RP.f=null;RP.tab='registros';render();
+}
+
+/* ---------- registros ---------- */
+async function rpRegistros(){
+  await rpTipos();const R=await rpRegs(),q=RP.q.trim().toLowerCase();
+  const L=R.filter(r=>(RP.quien==='all'||r.operator===RP.quien)&&(!RP.tipo||String(r.tipo_id)===RP.tipo)&&(!q||`${r.case_no} ${r.cliente} ${r.poliza} ${r.resumen}`.toLowerCase().includes(q)));
+  $('rp-body').innerHTML=`${rpFiltros(false)}
+   <div class="tbl"><table class="cs-tb"><thead><tr><th>Fecha</th><th>Persona</th><th>Caso</th><th>Tipo</th><th>Resumen</th><th>Registró</th><th></th></tr></thead><tbody>
+   ${L.length?L.map(r=>`<tr><td class="cs-mono">${fDs(r.fecha)}</td><td>${opB(r.operator)}</td><td><div class="cs-cli">${esc(r.cliente||'—')}</div><div class="cs-as">Caso ${esc(r.case_no)} · ${esc(r.poliza||'')}</div></td><td><span class="rp-tag">${esc(rpTipoN(r))}</span></td><td><div class="rp-sum">${esc(r.resumen)}</div></td><td class="small cs-mut">${esc((r.created_by||'').split('@')[0])}</td>
+     <td><div class="acts"><button class="lnk" onclick="rpEditar(${r.id})">Editar</button><button class="lnk red" onclick="rpBorrar(${r.id})">Eliminar</button></div></td></tr>`).join(''):'<tr><td colspan="7" class="empty">No hay reprocesos que coincidan.</td></tr>'}
+   </tbody></table></div><p class="small muted">${plural(L.length,'reproceso','reprocesos')}</p>`;
+}
+function rpFiltros(periodo){
+  const tipos=RPD.tipos||[];
+  const per=[['7','7 días'],['30','30 días'],['90','90 días'],['mes','Este mes'],['mesant','Mes pasado'],['trim','Trimestre'],['anio','Este año'],['todo','Todo'],['custom','Fechas…']];
+  const go=periodo?'rpResumen()':'rpRegistros()';
+  return`${periodo?`<div class="cs-bar"><div class="seg" role="radiogroup" aria-label="Período">${per.map(([k,l])=>`<button role="radio" aria-checked="${RP.per===k}" onclick="RP.per='${k}';rpResumen()">${l}</button>`).join('')}</div>
+     ${RP.per==='custom'?(()=>{const R=rango(null,RP);return`<input type="date" value="${R.f}" onchange="RP.desde=this.value;rpResumen()" aria-label="Desde"><span class="cs-mut">a</span><input type="date" value="${R.t}" onchange="RP.hasta=this.value;rpResumen()" aria-label="Hasta">`})():''}</div>`:''}
+   <div class="cs-bar"><div class="chips" style="margin:0">${[['all','Todos'],...OPS.map(o=>[o,OPN[o]])].map(([k,l])=>`<button class="chip" aria-pressed="${RP.quien===k}" onclick="RP.quien='${k}';${go}">${l}</button>`).join('')}</div>
+    <select onchange="RP.tipo=this.value;${go}" aria-label="Tipo"><option value="">Todos los tipos</option>${tipos.map(t=>`<option value="${t.id}" ${RP.tipo===String(t.id)?'selected':''}>${esc(t.nombre)}</option>`).join('')}</select>
+    ${periodo?`<button class="btn sm" style="margin-left:auto" onclick="rpCSV()">Descargar (CSV)</button>`:`<input type="search" class="grow" placeholder="Buscar caso, cliente, póliza o texto del resumen" value="${esc(RP.q)}" oninput="RP.q=this.value;clearTimeout(rpT);rpT=setTimeout(()=>{rpRegistros();const i=document.querySelector('#rp-body input[type=search]');i.focus();i.setSelectionRange(i.value.length,i.value.length)},250)">`}</div>`;
+}
+async function rpEditar(id){
+  const r=RPD.regs.find(x=>x.id===id);if(!r)return;
+  RP.f={id,op:r.operator,caso:{no:r.case_no,poliza:r.poliza,cliente:r.cliente,clase:r.clase,asunto:r.asunto,fa:r.fecha_asignado},q:'',manual:false,tipo:String(r.tipo_id||''),fecha:r.fecha,resumen:r.resumen};
+  RP.tab='nuevo';render();
+}
+async function rpBorrar(id){
+  if(!confirm('¿Eliminar este reproceso? No se puede deshacer.'))return;
+  const{error}=await sb.from('reprocesos').delete().eq('id',id);
+  if(error){toast('No se pudo eliminar: '+error.message);return}
+  RPD.regs=null;toast('Reproceso eliminado.');rpRegistros();
+}
+
+/* ---------- tipos ---------- */
+async function rpTiposTab(){
+  const T2=await rpTipos(true),R=await rpRegs(),uso={};R.forEach(r=>uso[r.tipo_id]=(uso[r.tipo_id]||0)+1);
+  $('rp-body').innerHTML=`<div class="info">Estos son los tipos que aparecen al registrar un reproceso. Si quitas uno que ya tiene registros, deja de aparecer para casos nuevos pero se conserva en el historial y en el resumen.</div>
+   <div class="cs-bar"><input id="nt-n" placeholder="Nombre del tipo (ej.: Póliza emitida con datos incorrectos)" class="grow"><input id="nt-d" placeholder="Descripción (opcional)" class="grow"><button class="btn primary" onclick="rpTipoAdd()">Agregar tipo</button></div>
+   <div class="tbl"><table><thead><tr><th>Tipo</th><th>Descripción</th><th class="cs-num">Registros</th><th>Estado</th><th></th></tr></thead><tbody>
+   ${T2.length?T2.map(t=>`<tr><td><input value="${esc(t.nombre)}" id="tn-${t.id}"></td><td><input value="${esc(t.descripcion||'')}" id="td-${t.id}"></td><td class="cs-num">${uso[t.id]||0}</td><td>${t.activo?'<span class="rp-tag">Activo</span>':'<span class="rp-tag off">Quitado</span>'}</td>
+     <td><div class="acts"><button class="lnk" onclick="rpTipoSave(${t.id})">Guardar</button>${t.activo?`<button class="lnk red" onclick="rpTipoAct(${t.id},false,${uso[t.id]||0})">Quitar</button>`:`<button class="lnk" onclick="rpTipoAct(${t.id},true)">Volver a activar</button>`}</div></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Todavía no hay tipos. Agrega el primero arriba.</td></tr>'}
+   </tbody></table></div>`;
+}
+async function rpTipoAdd(){
+  const nombre=$('nt-n').value.trim(),descripcion=$('nt-d').value.trim()||null;if(!nombre){toast('Escribe el nombre del tipo.');return}
+  const{error}=await sb.from('reproceso_tipos').insert({nombre,descripcion});
+  if(error){toast(error.code==='23505'?'Ya existe un tipo con ese nombre.':'No se pudo agregar: '+error.message);return}
+  toast('Tipo agregado.');rpTiposTab();
+}
+async function rpTipoSave(id){
+  const nombre=$('tn-'+id).value.trim(),descripcion=$('td-'+id).value.trim()||null;if(!nombre){toast('El nombre no puede quedar vacío.');return}
+  const{error}=await sb.from('reproceso_tipos').update({nombre,descripcion}).eq('id',id);
+  toast(error?(error.code==='23505'?'Ya existe un tipo con ese nombre.':'No se pudo guardar: '+error.message):'Tipo actualizado.');
+}
+async function rpTipoAct(id,on,uso){
+  if(!on&&!uso){if(!confirm('Este tipo no tiene registros. ¿Eliminarlo por completo?'))return;const{error}=await sb.from('reproceso_tipos').delete().eq('id',id);if(error){toast('No se pudo eliminar: '+error.message);return}toast('Tipo eliminado.');return rpTiposTab()}
+  const{error}=await sb.from('reproceso_tipos').update({activo:on}).eq('id',id);
+  if(error){toast('No se pudo cambiar: '+error.message);return}toast(on?'Tipo activado de nuevo.':'Tipo quitado. Se conserva en el historial.');rpTiposTab();
+}
+
+/* ---------- resumen / dashboard ---------- */
+async function rpResumen(){
+  await rpTipos();const all=await rpRegs(),H=await loadHist(),E=engine(H);
+  Object.values(K.charts).forEach(c=>c.destroy());K.charts={};
+  const R=rango(all.length?all[all.length-1].fecha:null,RP);
+  const ops=RP.quien==='all'?OPS:[RP.quien];
+  const fil=(f,t)=>all.filter(r=>r.fecha>=f&&r.fecha<=t&&ops.includes(r.operator)&&(!RP.tipo||String(r.tipo_id)===RP.tipo));
+  const L=fil(R.f,R.t),LP=fil(R.pf,R.pt);
+  const cerr=E.cases.filter(c=>ops.includes(c.op)&&!c.open&&c.close&&c.close>=R.f&&c.close<=R.t).length;
+  const casosAf=new Set(L.map(r=>r.operator+'|'+r.case_no)).size;
+  const cnt=(arr,key)=>{const m={};arr.forEach(r=>{const k=key(r);m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
+  const porTipo=cnt(L,rpTipoN),porOp=cnt(L,r=>r.operator),porCls=cnt(L,r=>r.clase||'(SIN CLASE)');
+  const porCaso=cnt(all.filter(r=>ops.includes(r.operator)),r=>r.operator+'|'+r.case_no).filter(x=>x[1]>1);
+  const tasa=cerr?L.length/cerr*100:null;
+  $('rp-body').innerHTML=`${rpFiltros(true)}
+   <div class="kpis">
+    <div class="kpi main"><span>Reprocesos</span><strong>${L.length}${delta(L.length,LP.length,false)}</strong><small class="muted">${fDs(R.f)} al ${fDs(R.t)}</small></div>
+    <div class="kpi"><span>Casos afectados</span><strong>${casosAf}</strong><small class="muted">${L.length>casosAf?`${L.length-casosAf} reproceso${L.length-casosAf===1?'':'s'} repetido${L.length-casosAf===1?'':'s'} en el mismo caso`:'Ningún caso se repitió'}</small></div>
+    <div class="kpi ${tasa!==null&&tasa>=10?'warn':''}"><span>Por cada 100 casos cerrados</span><strong>${tasa===null?'—':f1(tasa)}</strong><small class="muted">${cerr} casos cerrados en el período</small></div>
+    <div class="kpi"><span>Tipo más frecuente</span><strong style="font-size:17px;line-height:1.3">${porTipo[0]?esc(porTipo[0][0]):'—'}</strong><small class="muted">${porTipo[0]?plural(porTipo[0][1],'vez','veces'):''}</small></div>
+    <div class="kpi"><span>Persona con más reprocesos</span><strong style="font-size:17px">${porOp[0]?OPN[porOp[0][0]]:'—'}</strong><small class="muted">${porOp[0]?plural(porOp[0][1],'reproceso','reprocesos'):''}</small></div>
+   </div>
+   <div class="cs-grid2">
+    <div class="cs-chart"><h3>Por tipo</h3><p>Qué errores se repiten más.</p><div class="cs-cv"><canvas id="rc1"></canvas></div></div>
+    <div class="cs-chart"><h3>Por persona</h3><p>Reprocesos y casos cerrados de cada persona en el período.</p><div class="cs-cv"><canvas id="rc2"></canvas></div></div>
+    <div class="cs-chart"><h3>Por semana</h3><p>Cómo evoluciona la cantidad de reprocesos.</p><div class="cs-cv"><canvas id="rc3"></canvas></div></div>
+    <div class="cs-chart"><h3>Por clase de caso</h3><p>En qué tipo de trámite ocurren.</p><div class="cs-cv"><canvas id="rc4"></canvas></div></div>
+   </div>
+   <section class="cs-sec"><h2>Persona por tipo</h2><div class="tbl" id="rp-mx"></div></section>
+   <section class="cs-sec"><h2>Casos con más de un reproceso <small>histórico completo</small></h2><div class="tbl" id="rp-rep"></div></section>
+   <section class="cs-sec"><h2>Últimos reprocesos del período</h2><div class="tbl" id="rp-last"></div></section>`;
+  window.__rpL=L;window.__rpR=R;
+  const tiposU=porTipo.map(x=>x[0]),mx=Math.max(1,...ops.flatMap(o=>tiposU.map(t=>L.filter(r=>r.operator===o&&rpTipoN(r)===t).length)));
+  const hm=n=>n?`<span class="rp-hm" style="background:rgba(179,36,45,${.08+.5*n/mx});color:${n/mx>.6?'#fff':'#7A1A20'}">${n}</span>`:'<span class="cs-mut">·</span>';
+  $('rp-mx').innerHTML=L.length?`<table class="rp-mx"><thead><tr><th>Tipo</th>${ops.map(o=>`<th>${opB(o)}</th>`).join('')}<th>Total</th></tr></thead><tbody>${tiposU.map(t=>`<tr><td>${esc(t)}</td>${ops.map(o=>`<td>${hm(L.filter(r=>r.operator===o&&rpTipoN(r)===t).length)}</td>`).join('')}<td><b>${L.filter(r=>rpTipoN(r)===t).length}</b></td></tr>`).join('')}
+    <tr style="background:var(--sunk);font-weight:600"><td>Total</td>${ops.map(o=>`<td>${L.filter(r=>r.operator===o).length}</td>`).join('')}<td>${L.length}</td></tr></tbody></table>`:'<p class="empty">Sin reprocesos en el período.</p>';
+  $('rp-rep').innerHTML=porCaso.length?`<table><thead><tr><th>Caso</th><th>Persona</th><th class="cs-num">Reprocesos</th><th>Tipos</th><th>Último</th></tr></thead><tbody>${porCaso.slice(0,15).map(([k,n])=>{const rs=all.filter(r=>r.operator+'|'+r.case_no===k),r0=rs[0];return`<tr><td><div class="cs-cli">${esc(r0.cliente||'—')}</div><div class="cs-as">Caso ${esc(r0.case_no)} · ${esc(r0.poliza||'')}</div></td><td>${opB(r0.operator)}</td><td class="cs-num cs-bad">${n}</td><td>${[...new Set(rs.map(rpTipoN))].map(t=>`<span class="rp-tag">${esc(t)}</span>`).join(' ')}</td><td class="cs-mono">${fDs(r0.fecha)}</td></tr>`}).join('')}</tbody></table>`:'<p class="empty">Ningún caso tiene más de un reproceso.</p>';
+  $('rp-last').innerHTML=L.length?`<table class="cs-tb"><thead><tr><th>Fecha</th><th>Persona</th><th>Caso</th><th>Tipo</th><th>Resumen</th></tr></thead><tbody>${L.slice(0,10).map(r=>`<tr><td class="cs-mono">${fDs(r.fecha)}</td><td>${opB(r.operator)}</td><td><div class="cs-cli">${esc(r.cliente||'—')}</div><div class="cs-as">Caso ${esc(r.case_no)}</div></td><td><span class="rp-tag">${esc(rpTipoN(r))}</span></td><td><div class="rp-sum">${esc(r.resumen)}</div></td></tr>`).join('')}</tbody></table>${L.length>10?`<p class="small"><button class="lnk" onclick="rpTab('registros')">Ver los ${L.length} registros</button></p>`:''}`:'<p class="empty">Sin reprocesos en el período.</p>';
+  if(!window.Chart)return;
+  Chart.defaults.font.family='"Instrument Sans","Segoe UI",system-ui,sans-serif';Chart.defaults.color='#66737C';
+  const hb=(id,pairs,color)=>chart(id,{type:'bar',data:{labels:pairs.map(p=>p[0].length>34?p[0].slice(0,32)+'…':p[0]),datasets:[{label:'Reprocesos',data:pairs.map(p=>p[1]),backgroundColor:color,borderRadius:4}]},options:baseOpts(false,{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0},grid:{color:'#EEF1F3'}},y:{grid:{display:false}}}})});
+  hb('rc1',porTipo.slice(0,10),'#B3242D');
+  const cerrOp=o=>E.cases.filter(c=>c.op===o&&!c.open&&c.close&&c.close>=R.f&&c.close<=R.t).length;
+  chart('rc2',{type:'bar',data:{labels:ops.map(o=>OPN[o]),datasets:[{label:'Reprocesos',data:ops.map(o=>L.filter(r=>r.operator===o).length),backgroundColor:ops.map(o=>OPC[o]),borderRadius:4},{label:'Casos cerrados',data:ops.map(cerrOp),backgroundColor:'#D5DEE2',borderRadius:4}]},options:baseOpts(false)});
+  const wks=[...new Set(L.map(r=>wkKey(r.fecha)))].sort();
+  chart('rc3',{type:'bar',data:{labels:wks.map(w=>{const x=pISO(w);return`Sem. ${x.getDate()}/${x.getMonth()+1}`}),datasets:ops.map(o=>({label:OPN[o],data:wks.map(w=>L.filter(r=>r.operator===o&&wkKey(r.fecha)===w).length),backgroundColor:OPC[o],borderRadius:4}))},options:baseOpts(true)});
+  hb('rc4',porCls.slice(0,10),'#0D6174');
+}
+function rpCSV(){
+  const L=window.__rpL||[];if(!L.length){toast('No hay reprocesos en el período.');return}
+  const q=v=>`"${String(v??'').replace(/"/g,'""')}"`;
+  const lines=[['Fecha','Persona','No. caso','Póliza','Cliente','Clase','Asunto','Fecha asignado','Tipo','Resumen','Registró'].map(q).join(',')];
+  L.forEach(r=>lines.push([fDs(r.fecha),OPN[r.operator],r.case_no,r.poliza,r.cliente,r.clase,r.asunto,r.fecha_asignado?fDs(r.fecha_asignado):'',rpTipoN(r),r.resumen,r.created_by].map(q).join(',')));
+  const b=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download=`reprocesos_${window.__rpR.f}_${window.__rpR.t}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+async function homeReproc(){
+  if(!G.admin)return;
+  let n='—',top='',mes=0;
+  try{await rpTipos();const all=await rpRegs(),m0=tISO(new Date(hoyD().getFullYear(),hoyD().getMonth(),1));const L=all.filter(r=>r.fecha>=m0);mes=L.length;const c={};L.forEach(r=>{const k=rpTipoN(r);c[k]=(c[k]||0)+1});const e=Object.entries(c).sort((a,b)=>b[1]-a[1])[0];top=e?e[0]:'';n=all.length}catch(e){n='—'}
+  const el=document.createElement('article');el.className='mod';el.style.cssText='--m1:#8A2A35;--m2:#C2457F';
+  el.innerHTML=`<button class="mod-main" onclick="irMod('reproc')" aria-label="Abrir Reprocesos"><div class="mod-top"><span class="mod-ic">${ICO_RP}</span></div>
+    <h2>Reprocesos</h2><p>Registro de casos que hubo que corregir o rehacer, con su tipo y resumen.</p>
+    <div class="mod-st"><div><strong>${mes}</strong><span>Este mes</span></div><div><strong>${n}</strong><span>En total</span></div><div><strong style="font-size:14px;line-height:1.3">${esc(top||'—')}</strong><span>Más frecuente</span></div></div>
+    <span class="mod-go">Abrir <span aria-hidden="true">→</span></span></button>
+   <div class="mod-lk"><button onclick="rpNuevo()">Agregar reproceso</button><button onclick="RP.tab='registros';irMod('reproc')">Registros</button><button onclick="RP.tab='tipos';irMod('reproc')">Tipos</button></div>`;
+  $('mods')?.appendChild(el);
 }
 
 addEventListener('keydown',e=>{if(e.key==='Escape')revClose()});
