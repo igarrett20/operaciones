@@ -709,6 +709,48 @@ body.wide main{max-width:1560px}
 .rp-mx td,.rp-mx th{text-align:center}.rp-mx td:first-child,.rp-mx th:first-child{text-align:left}
 .rp-hm{display:inline-block;min-width:30px;padding:2px 6px;border-radius:6px;font-weight:600}
 @media (max-width:760px){.rp-it{grid-template-columns:1fr;gap:4px}}
+/* ---------- pre pólizas ---------- */
+.pp-choose{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;max-width:780px}
+.pp-opt{appearance:none;text-align:left;border:1px solid var(--line);border-radius:14px;background:#fff;padding:22px;cursor:pointer;transition:box-shadow .2s,border-color .2s,transform .2s}
+.pp-opt:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(20,40,50,.09);transform:translateY(-2px)}
+.pp-opt h3{margin:14px 0 4px;font-size:18px}.pp-opt p{margin:0;color:var(--muted);font-size:14px}
+.pp-form,.pp-det{max-width:900px}
+.pp-card{border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px;background:#fff}
+.pp-card h3{margin:0 0 14px;font-size:16px}
+.pp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.pp-f{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600;color:var(--muted);min-width:0}
+.pp-f b{color:var(--danger)}.pp-f.full{grid-column:1/-1}
+.pp-f input,.pp-f select,.pp-f textarea{font-weight:400}
+.pp-f .seg{margin:0;align-self:flex-start}.pp-f .seg button{padding:7px 22px}
+.pp-f small{font-weight:500}.pp-ok{color:var(--ok)}
+.pp-ro{background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--ink)}
+.pp-acts{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:4px 0 16px}
+.pp-acts .btn.sm{display:inline-flex;align-items:center;gap:6px}
+.pp-chip{display:inline-block;font-size:12px;font-weight:700;color:var(--c);background:color-mix(in srgb,var(--c) 11%,#fff);border:1px solid color-mix(in srgb,var(--c) 35%,#fff);border-radius:999px;padding:2px 10px;white-space:nowrap}
+.pp-bar{height:7px;border-radius:9px;background:var(--line);overflow:hidden}
+.pp-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),#3FA3A8);border-radius:9px;transition:width .5s ease}
+.pp-bar.ret i{background:var(--line-strong)}
+.pp-prog ol{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);margin:7px 0 0;padding:0;font-size:12px;color:var(--muted);gap:6px}
+.pp-prog li:nth-child(2){text-align:center}.pp-prog li:nth-child(3){text-align:right}
+.pp-prog li b{font-weight:600}.pp-prog li.on b{color:var(--ink)}.pp-prog li small{display:block}
+.pp-sec{border:1px solid var(--line);border-radius:12px;margin-bottom:14px;overflow:hidden;background:#fff}
+.pp-sec h3{margin:0;padding:10px 14px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--sunk);border-bottom:1px solid var(--line)}
+.pp-row{display:grid;grid-template-columns:220px minmax(0,1fr) 34px;gap:12px;align-items:center;padding:9px 14px}
+.pp-row+.pp-row{border-top:1px solid var(--line)}
+.pp-row>span{color:var(--muted);font-size:13px}.pp-row strong{font-weight:600;word-break:break-word;white-space:pre-line}
+.pp-cp{appearance:none;border:1px solid var(--line-strong);background:#fff;border-radius:7px;width:34px;height:30px;display:grid;place-items:center;cursor:pointer;color:var(--muted);transition:color .15s,border-color .15s}
+.pp-cp:hover{color:var(--brand);border-color:var(--brand)}.pp-cp.ok,.btn.ok{color:var(--ok);border-color:var(--ok)}
+.pp-items{display:grid;gap:10px}
+.pp-it{appearance:none;text-align:left;border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 16px;cursor:pointer;display:grid;gap:12px;width:100%;transition:border-color .15s,box-shadow .15s}
+.pp-it:hover{border-color:var(--line-strong);box-shadow:0 6px 18px rgba(20,40,50,.07)}
+.pp-it-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.pp-it-h b{font-size:15px}.pp-it-h small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.pp-it-r{text-align:right}
+tr.pp-click{cursor:pointer}
+.pp-test{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:1px dashed #9B7BC4;background:#F5F1FA;border-radius:12px;padding:10px 14px;margin:0 0 16px}
+.pp-test b{display:block;color:#6A4C93}.pp-test span{font-size:13px;color:var(--muted)}.pp-test .seg{margin:0}
+.pp-obra{opacity:.85}.pp-obra .mod-ic{filter:grayscale(.4)}tr.pp-click:hover td{background:var(--sunk)}
+@media (max-width:640px){.pp-grid{grid-template-columns:1fr}.pp-row{grid-template-columns:minmax(0,1fr) 34px;gap:2px 10px}.pp-row>span{grid-column:1/-1}.pp-it-h{flex-direction:column}.pp-it-r{text-align:left}.pp-card{padding:16px}}
 </style>
 
 </head>
@@ -854,9 +896,9 @@ async function boot(){
   }
   G.me=data;G.admin=data.role==='admin';G.op=data.operator;
   showUser();
-  try{const lr=await latP;if(lr instanceof Error)throw lr}catch(e){screen(`<h1>No se pudieron cargar los datos</h1><p>${esc(e.message)}</p><button class="btn" onclick="location.reload()">Intentar de nuevo</button>`);return}
+  try{const lr=await latP;if(lr instanceof Error&&!ppRolSub())throw lr}catch(e){screen(`<h1>No se pudieron cargar los datos</h1><p>${esc(e.message)}</p><button class="btn" onclick="location.reload()">Intentar de nuevo</button>`);return}
   live();
-  M=location.hash==='#casos'?'casos':location.hash==='#reprocesos'&&G.admin?'reproc':'home';
+  M=location.hash==='#prepolizas'?'pp':location.hash==='#casos'&&!ppRolSub()?'casos':location.hash==='#reprocesos'&&G.admin?'reproc':'home';
   render();
 }
 sb.auth.onAuthStateChange((ev)=>{if(ev==='SIGNED_OUT')location.replace(redirectTo())});
@@ -878,15 +920,16 @@ const ICO={
   home:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>'
 };
 function modNav(){
-  $('modslot').innerHTML=`<nav class="modsw" aria-label="Módulos"><button aria-pressed="${M==='home'}" onclick="irMod('home')">${ICO.home}Inicio</button><button aria-pressed="${M==='casos'}" onclick="irMod('casos')">Casos</button>${G.admin?`<button aria-pressed="${M==='reproc'}" onclick="irMod('reproc')">Reprocesos</button>`:''}</nav>`;
+  $('modslot').innerHTML=`<nav class="modsw" aria-label="Módulos"><button aria-pressed="${M==='home'}" onclick="irMod('home')">${ICO.home}Inicio</button>${ppRolSub()?'':`<button aria-pressed="${M==='casos'}" onclick="irMod('casos')">Casos</button>`}${G.admin?`<button aria-pressed="${M==='reproc'}" onclick="irMod('reproc')">Reprocesos</button>`:''}<button aria-pressed="${M==='pp'}" onclick="irMod('pp')">Pre pólizas</button></nav>`;
 }
-function irMod(m,tab){M=m;if(tab)V.tab=tab;history.replaceState(null,'',m==='casos'?'#casos':m==='reproc'?'#reprocesos':location.pathname);render();scrollTo(0,0)}
+function irMod(m,tab){M=m;if(tab)V.tab=tab;history.replaceState(null,'',m==='casos'?'#casos':m==='reproc'?'#reprocesos':m==='pp'?'#prepolizas':location.pathname);render();scrollTo(0,0)}
 function render(keep){
   modNav();
-  document.body.classList.toggle('wide',M==='casos'||M==='reproc');
+  document.body.classList.toggle('wide',M==='casos'||M==='reproc'||M==='pp');
   Object.values(K.charts).forEach(c=>c.destroy());K.charts={};
   if(M==='home')return renderHome();
   if(M==='reproc')return renderReproc();
+  if(M==='pp')return renderPP();
   return renderCasos(keep);
 }
 
@@ -900,6 +943,7 @@ function corteTxt(ops){
   return`${fDs(d)}${u?' · '+fH(u):''}`;
 }
 async function renderHome(){
+  if(ppRolSub())return renderHomeSub();
   const d=new Date(),fecha=`${DIAS[d.getDay()][0].toUpperCase()+DIAS[d.getDay()].slice(1)}, ${d.getDate()} de ${MESES[d.getMonth()].toLowerCase()} de ${d.getFullYear()}`;
   const ops=G.admin?TEAM:[G.op];
   $('app').innerHTML=`<div class="home fade">
@@ -920,7 +964,7 @@ async function renderHome(){
      <div class="mod-st"><div><strong>${rows.length}</strong><span>${G.admin?'Abiertos del equipo':'Casos abiertos'}</span></div><div><strong>${c.urgente}</strong><span>Urgentes</span></div><div><strong>${c.hoy}</strong><span>Para hoy</span></div></div>
      <span class="mod-go">Abrir <span aria-hidden="true">→</span></span></button>
     <div class="mod-lk">${links.map(([l,t])=>`<button onclick="irMod('casos','${t}')">${l}</button>`).join('')}</div></article>`;
-  homeReproc();
+  homeReproc();homePP();
   const p=[];
   if(c.urgente)p.push(['p-warn',`${plural(c.urgente,'caso ya pasó','casos ya pasaron')} su plazo de atención`,G.admin?'equipo':'mis','urgente']);
   if(c.hoy)p.push(['p-warn',`${plural(c.hoy,'caso vence','casos vencen')} hoy su plazo: hay que darle${c.hoy===1?'':'s'} seguimiento`,G.admin?'equipo':'mis','hoy']);
@@ -936,6 +980,7 @@ async function renderHome(){
    ===================================================================== */
 const TABS_ADMIN=[['equipo','Equipo'],['analisis','Análisis'],['alertas','Alertas'],['mis','Mis casos'],['usuarios','Usuarios'],['cargar','Cargar datos']];
 function renderCasos(keep){
+  if(ppRolSub()){M='home';return render()}
   if(!G.admin)V.tab='mis';
   else if(!V.tab||!TABS_ADMIN.some(t=>t[0]===V.tab))V.tab='equipo';
   const tabs=G.admin?`<div class="tabs" role="tablist">${TABS_ADMIN.map(([id,l])=>`<button class="tab" role="tab" aria-selected="${V.tab===id}" onclick="setTab('${id}')">${l}</button>`).join('')}</div>`:'';
@@ -1195,17 +1240,17 @@ async function tabAlertas(){
 async function tabUsuarios(){
   const{data,error}=await sb.from('app_users').select('*').order('role').order('operator');
   if(error)throw error;
-  $('cs-body').innerHTML=`<div class="info">Cada persona entra con su cuenta de Microsoft. Los <b>operadores</b> solo ven sus propios casos; los <b>administradores</b> ven todo el equipo, el análisis y esta sección. El operador tiene que coincidir con el que usa la automatización del servidor.</div>
+  $('cs-body').innerHTML=`<div class="info">Cada persona entra con su cuenta de Microsoft. Los <b>operadores</b> solo ven sus propios casos; los <b>administradores</b> ven todo el equipo, el análisis y esta sección. Los de <b>solo pre pólizas</b> únicamente crean clientes y pre pólizas y ven su historial (no ven casos); a ellos déjales “Casos de” en (ninguno). El operador tiene que coincidir con el que usa la automatización del servidor.</div>
    <div class="tbl"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Casos de</th><th>Rol</th><th></th></tr></thead><tbody>
    ${data.map(u=>`<tr><td><input value="${esc(u.nombre||'')}" id="n-${esc(u.email)}"></td><td class="cs-mono">${esc(u.email)}</td>
      <td><select id="o-${esc(u.email)}"><option value="">(ninguno)</option>${OPS.map(o=>`<option value="${o}" ${u.operator===o?'selected':''}>${OPN[o]} (${o})</option>`).join('')}</select></td>
-     <td><select id="r-${esc(u.email)}"><option value="operador" ${u.role==='operador'?'selected':''}>Operador</option><option value="admin" ${u.role==='admin'?'selected':''}>Administrador</option></select></td>
+     <td><select id="r-${esc(u.email)}"><option value="operador" ${u.role==='operador'?'selected':''}>Operador</option><option value="admin" ${u.role==='admin'?'selected':''}>Administrador</option><option value="prepoliza" ${u.role==='prepoliza'?'selected':''}>Solo pre pólizas</option></select></td>
      <td><div class="acts"><button class="lnk" onclick="usrSave('${esc(u.email)}')">Guardar</button>${u.email===G.me.email?'':`<button class="lnk red" onclick="usrDel('${esc(u.email)}')">Quitar</button>`}</div></td></tr>`).join('')}
    </tbody></table></div>
    <section class="cs-sec"><h2>Agregar persona</h2>
     <div class="cs-bar"><input id="nu-n" placeholder="Nombre"><input id="nu-e" type="email" class="grow" placeholder="correo@aura-cr.com">
      <select id="nu-o"><option value="">Casos de…</option>${OPS.map(o=>`<option value="${o}">${OPN[o]} (${o})</option>`).join('')}</select>
-     <select id="nu-r"><option value="operador">Operador</option><option value="admin">Administrador</option></select>
+     <select id="nu-r"><option value="operador">Operador</option><option value="admin">Administrador</option><option value="prepoliza">Solo pre pólizas</option></select>
      <button class="btn primary" onclick="usrAdd()">Agregar</button></div>
     <p class="small muted">Para una persona con casos nuevos en SISEG también hay que agregarla en el AHK, en el .ps1 y en la restricción de la tabla en Supabase.</p></section>`;
 }
@@ -1454,6 +1499,347 @@ async function homeReproc(){
     <span class="mod-go">Abrir <span aria-hidden="true">→</span></span></button>
    <div class="mod-lk"><button onclick="rpNuevo()">Agregar reproceso</button><button onclick="RP.tab='registros';irMod('reproc')">Registros</button><button onclick="RP.tab='tipos';irMod('reproc')">Tipos</button></div>`;
   $('mods')?.appendChild(el);
+}
+
+/* =====================================================================
+   PRE PÓLIZAS Y CREACIÓN DE CLIENTES
+   Gestores (admin y operadores) reciben y procesan; rol "prepoliza" solo
+   crea clientes / pre pólizas y ve su historial con el avance.
+   ===================================================================== */
+// Mientras PP_LISTO sea false, el módulo sale "En construcción" para todos menos para Ian (vista de prueba).
+const PP_LISTO=false;
+const ppTester=()=>/^igarrett@/i.test(G.me?.email||G.session?.user?.email||'');
+const ppOn=()=>PP_LISTO||ppTester();
+const ppRolSub=()=>G.me?.role==='prepoliza';
+const ppSub=()=>ppTester()?PP.vista==='sube':ppRolSub();
+const ppGes=()=>ppTester()?PP.vista!=='sube':(G.admin||G.me?.role==='operador');
+const ppEmail=()=>(G.session?.user?.email||G.me?.email||'').toLowerCase();
+const ppNom=()=>G.me?.nombre||G.session?.user?.user_metadata?.full_name||ppEmail();
+const PP={vista:'recibe',tab:null,f:null,q:'',est:'atender',sel:null,cq:'',csel:null,cret:false};
+const PPD={cli:null,per:null,regs:null,live:false};
+const PP_ASEG=['ADISA','ASSA','BMI','Davivienda','INS','LAFISE','MAPFRE','MNK','PALIG','Qualitas'];
+const PP_LIN=['Autos','Equipo electrónico','Fronting','Incendio','Gastos médicos','Responsabilidad civil','Riesgos del trabajo','Vida','Otros'];
+const PP_TRA=['Emisión','Variación','Traspaso'];
+const PP_PAGO=['Mensual','Trimestral','Semestral','Anual'];
+const PP_MON=['Colones','Dólares'];
+const PP_COR=['Alexis','Beatriz','BV Promo','Corporativo','EB','Individual','Karla','Patricia','Stephanie'];
+const PP_EJE=['Cristina','Jorge','José','Mindy','Rosa','Susana','Tim','El corredor es el ejecutivo'];
+const PP_TIPO=['Individual','Corporativo','Colectivo'];
+const PP_IDI=['Español','Inglés'];
+const PP_EST={enviado:'Enviado',en_proceso:'En proceso',finalizado:'Finalizado',retirado:'Retirado'};
+const PP_ESTC={enviado:'#2B6CB0',en_proceso:'#D9781E',finalizado:'#2E7D4F',retirado:'#66737C'};
+const CR_CANT={
+ 'San José':['San José','Escazú','Desamparados','Puriscal','Tarrazú','Aserrí','Mora','Goicoechea','Santa Ana','Alajuelita','Vázquez de Coronado','Acosta','Tibás','Moravia','Montes de Oca','Turrubares','Dota','Curridabat','Pérez Zeledón','León Cortés Castro'],
+ 'Alajuela':['Alajuela','San Ramón','Grecia','San Mateo','Atenas','Naranjo','Palmares','Poás','Orotina','San Carlos','Zarcero','Sarchí','Upala','Los Chiles','Guatuso','Río Cuarto'],
+ 'Cartago':['Cartago','Paraíso','La Unión','Jiménez','Turrialba','Alvarado','Oreamuno','El Guarco'],
+ 'Heredia':['Heredia','Barva','Santo Domingo','Santa Bárbara','San Rafael','San Isidro','Belén','Flores','San Pablo','Sarapiquí'],
+ 'Guanacaste':['Liberia','Nicoya','Santa Cruz','Bagaces','Carrillo','Cañas','Abangares','Tilarán','Nandayure','La Cruz','Hojancha'],
+ 'Puntarenas':['Puntarenas','Esparza','Buenos Aires','Montes de Oro','Osa','Quepos','Golfito','Coto Brus','Parrita','Corredores','Garabito','Monteverde','Puerto Jiménez'],
+ 'Limón':['Limón','Pococí','Siquirres','Talamanca','Matina','Guácimo']
+};
+const ICO_PP='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 11v6M9 14h6"/></svg>';
+const ICO_CP='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>';
+const ppKey=s=>String(s||'').trim().replace(/\s+/g,' ').toLowerCase();
+const ppT=s=>String(s??'').trim();
+const fDT=s=>{if(!s)return'';const d=new Date(s);return fD(d)+' '+fH(d)};
+
+async function ppCli(force){if(PPD.cli&&!force)return PPD.cli;return PPD.cli=await paged(()=>sb.from('pp_clientes').select('*').order('nombre').order('id'))}
+async function ppPer(force){if(PPD.per&&!force)return PPD.per;return PPD.per=await paged(()=>sb.from('pp_personas').select('*').order('nombre'))}
+async function ppRegs(force){if(PPD.regs&&!force)return PPD.regs;return PPD.regs=await paged(()=>sb.from('pp_prepolizas').select('*').order('created_at',{ascending:false}).order('id',{ascending:false}))}
+function ppNombres(){const m=new Map();(PPD.per||[]).forEach(p=>m.set(p.nombre_key,{nombre:p.nombre,id:p.identificacion||''}));(PPD.cli||[]).filter(c=>!c.retirado).forEach(c=>m.set(ppKey(c.nombre),{nombre:c.nombre,id:c.cedula,cli:c.id}));return m}
+function ppErr(e){const m=String(e?.message||e||'');
+  if(/row-level security|permission denied/i.test(m))return'No tienes permiso para hacer esto. Pídele al administrador que revise tu acceso.';
+  if(/does not exist|could not find the table|schema cache/i.test(m))return'Faltan las tablas del módulo en Supabase. El administrador tiene que correr el SQL de pre pólizas.';
+  if(/failed to fetch|network/i.test(m))return'No hay conexión. Revisa el internet e intenta de nuevo.';
+  return m}
+const ppChip=e=>`<span class="pp-chip" style="--c:${PP_ESTC[e]||'#66737C'}">${PP_EST[e]||esc(e)}</span>`;
+function ppProg(r){
+  if(r.estado==='retirado')return`<div class="pp-prog"><div class="pp-bar ret"><i style="width:100%"></i></div><ol><li class="on"><b>Retirado</b><small>${fDT(r.retirado_at)}${r.retirado_por?' · '+esc(r.retirado_por):''}</small></li></ol></div>`;
+  const st=['enviado','en_proceso','finalizado'],i=Math.max(0,st.indexOf(r.estado)),dt=[r.created_at,r.abierto_at,r.finalizado_at];
+  return`<div class="pp-prog"><div class="pp-bar"><i style="width:${(i+1)/3*100}%"></i></div><ol>${st.map((s,k)=>`<li class="${k<=i?'on':''}"><b>${PP_EST[s]}</b><small>${k<=i&&dt[k]?fDT(dt[k]):'&nbsp;'}</small></li>`).join('')}</ol></div>`;
+}
+const ppLin=r=>r.linea==='Otros'&&r.linea_otro?`Otros: ${r.linea_otro}`:r.linea;
+const ppCp=v=>v?`<button class="pp-cp" title="Copiar" aria-label="Copiar" data-v="${esc(v)}" onclick="ppCopy(this)">${ICO_CP}</button>`:'<span></span>';
+async function ppCopy(b){const v=b.dataset.v;
+  try{await navigator.clipboard.writeText(v)}catch(e){const t=document.createElement('textarea');t.value=v;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}
+  b.classList.add('ok');setTimeout(()=>b.classList.remove('ok'),1200);toast(v.includes('\n')?'Se copiaron todos los datos.':'Copiado: '+(v.length>40?v.slice(0,40)+'…':v));
+}
+function ppSecs(secs){
+  const all=secs.flatMap(([,rows])=>rows.filter(x=>x[1]).map(([l,v])=>`${l}: ${v}`)).join('\n');
+  return`<div class="pp-acts"><button class="btn sm" data-v="${esc(all)}" onclick="ppCopy(this)">${ICO_CP} Copiar todo</button></div>`+
+   secs.map(([t,rows])=>`<section class="pp-sec"><h3>${t}</h3>${rows.map(([l,v])=>`<div class="pp-row"><span>${l}</span><strong>${v?esc(v):'<em class="muted">—</em>'}</strong>${ppCp(v)}</div>`).join('')}</section>`).join('');
+}
+function ppCliRows(c){return[['Nombre',c.nombre],['Cédula',c.cedula],['Tipo de cliente',c.tipo_cliente],['Idioma',c.idioma],['Teléfonos',c.telefonos],['Correos electrónicos',c.correos],['Provincia',c.provincia],['Cantón',c.canton],['Distrito',c.distrito],['Dirección por señas',c.direccion_senas],['Consorcio SISEG',c.consorcio_siseg],['Contacto',c.contacto]]}
+
+/* ---------- módulo ---------- */
+function ppTabs(){return ppSub()?[['crear','Crear'],['historial','Mi historial']]:[['bandeja','Bandeja'],['clientes','Clientes'],...(G.admin?[['crear','Crear']]:[])]}
+const PP_OBRA=`<div class="emptybox"><span class="mod-ic" style="--m1:#6A4C93;--m2:#9B7BC4;margin:0 auto 12px">${'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 20h20M5 20V9l7-5 7 5v11"/><path d="M9 20v-6h6v6"/></svg>'}</span><h2>En construcción</h2><p>Este módulo todavía se está preparando. Muy pronto vas a poder crear clientes y pre pólizas desde aquí.</p></div>`;
+function ppVista(v){PP.vista=v;PP.tab=null;PP.f=null;PP.sel=null;PP.csel=null;PPD.regs=null;render()}
+function renderPP(){
+  if(!ppOn()){$('app').innerHTML=`<div class="fade"><div class="cs-sub"><h1 style="margin:0">Pre pólizas y clientes</h1></div>${PP_OBRA}</div>`;return}
+  const tabs=ppTabs();if(!PP.tab||!tabs.some(t=>t[0]===PP.tab))PP.tab=tabs[0][0];
+  $('app').innerHTML=`<div class="fade"><div class="cs-sub"><h1 style="margin:0">Pre pólizas y clientes</h1>${ppSub()||G.admin?`<button class="btn primary" onclick="ppIr('crear')">+ Crear</button>`:''}</div>
+   ${ppTester()?`<div class="pp-test"><div><b>Vista de prueba</b><span>${PP_LISTO?'Solo tú ves este selector.':'Para los demás el módulo sale “En construcción”. Solo tú lo ves así.'}</span></div><div class="seg" role="radiogroup" aria-label="Ver como"><button role="radio" aria-checked="${PP.vista==='sube'}" onclick="ppVista('sube')">Quien sube</button><button role="radio" aria-checked="${PP.vista==='recibe'}" onclick="ppVista('recibe')">Quien recibe</button></div></div>`:''}
+   <div class="tabs" role="tablist">${tabs.map(([id,l])=>`<button class="tab" role="tab" aria-selected="${PP.tab===id}" onclick="ppTab('${id}')">${l}</button>`).join('')}</div>
+   <div id="pp-body"><div class="loader"><span class="spin"></span><p class="muted">Cargando…</p></div></div></div>`;
+  ppLive();ppRefresh();
+}
+function ppRefresh(){const f={crear:ppCrear,historial:ppHist,bandeja:ppBandeja,clientes:ppClientes}[PP.tab];if(!$('pp-body')||!f)return;f().catch(e=>{console.error(e);if($('pp-body'))$('pp-body').innerHTML=`<div class="err">No se pudo cargar: ${esc(ppErr(e))}</div>`})}
+function ppTab(t){if(t!=='crear'||PP.tab!=='crear')PP.f=null;PP.tab=t;PP.sel=null;PP.csel=null;if(M!=='pp')irMod('pp');else render()}
+function ppIr(t,modo){PP.tab=t;PP.sel=null;PP.csel=null;PP.f=modo?ppNewF(modo):null;if(M!=='pp')irMod('pp');else render()}
+function ppAbrir(id){PP.sel=id;ppRefresh();scrollTo(0,0)}
+function ppAbrirCli(id){PP.csel=id;ppRefresh();scrollTo(0,0)}
+function ppLive(){
+  if(PPD.live||!ppOn())return;PPD.live=true;
+  sb.channel('pp-live').on('postgres_changes',{event:'*',schema:'public',table:'pp_prepolizas'},p=>{
+    PPD.regs=null;const n=p.new||{};
+    if(ppGes()&&p.eventType==='INSERT')toast(`Llegó una pre póliza nueva de ${n.cliente_nombre||'un cliente'}.`);
+    if(ppSub()&&p.eventType==='UPDATE'&&n.created_by===ppEmail())toast(`La pre póliza de ${n.cliente_nombre} está ${String(PP_EST[n.estado]||'').toLowerCase()}.`);
+    if(M==='pp'&&PP.tab!=='crear')ppRefresh();else if(M==='home')render();
+  }).subscribe();
+}
+
+/* ---------- crear ---------- */
+const ppNewF=modo=>({modo,conPP:modo==='pp',
+  c:{nombre:'',cedula:'',senas:'',provincia:'',canton:'',distrito:'',telefonos:'',correos:'',tipo:'',idioma:'',consorcio:'',contacto:''},
+  p:{aseg:'',cliente:'',cliente_id:null,an:'',aid:'',tramite:'',aseguradora:'',linea:'',otro:'',pago:'',moneda:'',fecha:'',corredor:'',ejecutivo:''}});
+function ppEmpezar(modo){PP.f=ppNewF(modo);ppCrear();scrollTo(0,0)}
+const ppReq=r=>r?'<b> *</b>':'';
+const ppIn=(o,k,l,x={})=>`<label class="pp-f${x.full?' full':''}"><span>${l}${ppReq(x.req)}</span><input id="pp-${o}-${k}" type="${x.type||'text'}" value="${esc(PP.f[o][k])}"${x.ph?` placeholder="${esc(x.ph)}"`:''}${x.list?` list="${x.list}"`:''} oninput="PP.f.${o}.${k}=this.value"${x.ch?` onchange="${x.ch}"`:''} autocomplete="off">${x.hint||''}</label>`;
+const ppSel=(o,k,l,opts,x={})=>`<label class="pp-f${x.full?' full':''}"><span>${l}${ppReq(x.req)}</span><select id="pp-${o}-${k}" onchange="PP.f.${o}.${k}=this.value${x.ch?';'+x.ch:''}"${opts.length?'':' disabled'}><option value="">${opts.length?'Elige…':esc(x.vacio||'Elige primero lo anterior')}</option>${opts.map(v=>`<option${PP.f[o][k]===v?' selected':''}>${esc(v)}</option>`).join('')}</select></label>`;
+const ppSiNo=(v,on,l)=>`<div class="pp-f full"><span>${l}<b> *</b></span><div class="seg" role="radiogroup" aria-label="${esc(l)}"><button type="button" role="radio" aria-checked="${v==='si'}" onclick="${on}('si')">Sí</button><button type="button" role="radio" aria-checked="${v==='no'}" onclick="${on}('no')">No</button></div></div>`;
+function ppSetConPP(v){PP.f.conPP=v==='si';ppCrear()}
+function ppSetAseg(v){PP.f.p.aseg=v;ppCrear()}
+async function ppCrear(){
+  await Promise.all([ppCli(),ppPer()]);
+  const F=PP.f,el=$('pp-body');if(!el)return;
+  if(!F){
+    el.innerHTML=`<p class="muted" style="margin:0 0 14px">¿Qué quieres hacer?</p><div class="pp-choose">
+      <button class="pp-opt" onclick="ppEmpezar('cliente')"><span class="mod-ic" style="--m1:#0D6174;--m2:#3FA3A8"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M19 8v6M16 11h6"/></svg></span><h3>Crear cliente</h3><p>Registra un cliente nuevo con sus datos. Si quieres, de una vez le haces la pre póliza.</p></button>
+      <button class="pp-opt" onclick="ppEmpezar('pp')"><span class="mod-ic" style="--m1:#6A4C93;--m2:#9B7BC4">${ICO_PP}</span><h3>Crear pre póliza</h3><p>Envía los datos de una póliza para que Operaciones la procese.</p></button></div>`;
+    return;
+  }
+  const c=F.c,p=F.p,nm=ppNombres();
+  const dl=`<datalist id="pp-dl">${[...nm.values()].map(x=>`<option value="${esc(x.nombre)}">`).join('')}</datalist>`;
+  let h='';
+  if(F.modo==='cliente'){
+    h+=`<section class="pp-card"><h3>Datos del cliente</h3><div class="pp-grid">
+      ${ppIn('c','nombre','Nombre',{req:1,full:1})}
+      ${ppIn('c','cedula','Cédula',{req:1})}
+      ${ppSel('c','tipo','Tipo de cliente',PP_TIPO,{req:1})}
+      ${ppSel('c','idioma','Idioma',PP_IDI,{req:1})}
+      ${ppIn('c','telefonos','Teléfonos',{req:1,ph:'Ej: 8888-8888, 2222-2222',type:'tel'})}
+      ${ppIn('c','correos','Correos electrónicos',{req:1,full:1,ph:'Si son varios, sepáralos con coma'})}
+      ${ppSel('c','provincia','Provincia',Object.keys(CR_CANT),{req:1,ch:"PP.f.c.canton='';ppCrear()"})}
+      ${ppSel('c','canton','Cantón',CR_CANT[c.provincia]||[],{req:1,vacio:'Elige primero la provincia'})}
+      ${ppIn('c','distrito','Distrito',{req:1})}
+      <label class="pp-f full"><span>Dirección por señas<b> *</b></span><textarea id="pp-c-senas" rows="2" oninput="PP.f.c.senas=this.value">${esc(c.senas)}</textarea></label>
+      ${ppIn('c','consorcio','Consorcio SISEG',{hint:'<small class="muted">Opcional</small>'})}
+      ${ppIn('c','contacto','Contacto',{hint:'<small class="muted">Opcional</small>'})}
+     </div></section>
+     <section class="pp-card"><div class="pp-grid">${ppSiNo(F.conPP?'si':'no','ppSetConPP','¿Crear también la pre póliza de este cliente?')}</div></section>`;
+  }
+  if(F.modo==='pp'||F.conPP){
+    const lk=p.cliente_id&&(PPD.cli||[]).find(x=>x.id===p.cliente_id);
+    h+=`<section class="pp-card"><h3>Pre póliza</h3><div class="pp-grid">${ppSiNo(p.aseg,'ppSetAseg','¿El cliente es el asegurado?')}`;
+    if(p.aseg){
+      h+=F.modo==='cliente'?`<div class="pp-f full"><span>Cliente</span><div class="pp-ro">${esc(c.nombre||'(el nombre que pusiste arriba)')}</div></div>`
+        :ppIn('p','cliente','Nombre del cliente',{req:1,full:1,list:'pp-dl',ch:'ppCliPick()',ph:'Escribe y elige si ya existe',hint:lk?`<small class="pp-ok">✓ Cliente registrado · cédula ${esc(lk.cedula)}</small>`:''});
+      if(p.aseg==='no')h+=ppIn('p','an','Nombre del asegurado',{req:1,list:'pp-dl',ch:'ppAsegPick()',ph:'Escribe y elige si ya existe'})+ppIn('p','aid','Identificación del asegurado',{req:1});
+      h+=`${ppSel('p','tramite','Tipo de trámite',PP_TRA,{req:1})}${ppSel('p','aseguradora','Aseguradora',PP_ASEG,{req:1})}
+        ${ppSel('p','linea','Línea de seguro',PP_LIN,{req:1,ch:'ppCrear()'})}
+        ${p.linea==='Otros'?ppIn('p','otro','¿Cuál línea?',{req:1}):''}
+        ${ppSel('p','pago','Forma de pago',PP_PAGO,{req:1})}${ppSel('p','moneda','Moneda',PP_MON,{req:1})}
+        ${ppIn('p','fecha','Fecha de emisión',{req:1,type:'date'})}
+        ${ppSel('p','corredor','Corredor',PP_COR,{req:1})}${ppSel('p','ejecutivo','Ejecutivo',PP_EJE,{req:1})}`;
+    }
+    h+=`</div></section>`;
+  }
+  const lbl=F.modo==='cliente'?(F.conPP?'Guardar cliente y enviar pre póliza':'Guardar cliente'):'Enviar pre póliza';
+  el.innerHTML=`<div class="pp-form">${dl}<p class="small muted" style="margin:0 0 12px">Los campos con <b style="color:var(--danger)">*</b> son obligatorios.</p>${h}
+    <div class="err" id="pp-err"></div>
+    <div class="pp-acts"><button class="btn primary" id="pp-save" onclick="ppGuardar()">${lbl}</button><button class="btn" onclick="ppCancelar()">Cancelar</button></div></div>`;
+}
+function ppCancelar(){if(!confirm('¿Cancelar? Lo que escribiste no se va a guardar.'))return;PP.f=null;ppCrear()}
+function ppCliPick(){const p=PP.f.p,m=ppNombres().get(ppKey(p.cliente));p.cliente_id=m?.cli||null;if(m)p.cliente=m.nombre;ppCrear()}
+function ppAsegPick(){const p=PP.f.p,m=ppNombres().get(ppKey(p.an));if(!m)return;p.an=m.nombre;$('pp-p-an').value=m.nombre;
+  if(m.id&&!ppT(p.aid)){p.aid=m.id;$('pp-p-aid').value=m.id;toast('Se completó la identificación que ya estaba registrada.')}}
+function ppVal(){
+  const F=PP.f,c=F.c,p=F.p,e=[],vacio=v=>!ppT(v);
+  if(F.modo==='cliente'){
+    [['nombre','nombre'],['cedula','cédula'],['tipo','tipo de cliente'],['idioma','idioma'],['telefonos','teléfonos'],['correos','correos electrónicos'],['provincia','provincia'],['canton','cantón'],['distrito','distrito'],['senas','dirección por señas']].forEach(([k,l])=>{if(vacio(c[k]))e.push(l)});
+    if(ppT(c.correos)){const malos=ppT(c.correos).split(/[,;\s]+/).filter(Boolean).filter(x=>!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x));if(malos.length)e.push(`revisa el correo "${malos[0]}", no parece válido`)}
+    if(ppT(c.telefonos)&&ppT(c.telefonos).replace(/\D/g,'').length<8)e.push('los teléfonos deben tener al menos 8 números');
+    const ced=ppKey(c.cedula).replace(/[\s-]/g,''),dup=ced&&(PPD.cli||[]).find(x=>!x.retirado&&ppKey(x.cedula).replace(/[\s-]/g,'')===ced);
+    if(dup)e.push(`ya existe un cliente con esa cédula (${dup.nombre}). Si es el mismo, haz solo la pre póliza`);
+  }
+  if(F.modo==='pp'||F.conPP){
+    if(!p.aseg)e.push('indica si el cliente es el asegurado');
+    else{
+      if(F.modo==='pp'&&vacio(p.cliente))e.push('nombre del cliente');
+      if(p.aseg==='no'){if(vacio(p.an))e.push('nombre del asegurado');if(vacio(p.aid))e.push('identificación del asegurado')}
+      [['tramite','tipo de trámite'],['aseguradora','aseguradora'],['linea','línea de seguro'],['pago','forma de pago'],['moneda','moneda'],['fecha','fecha de emisión'],['corredor','corredor'],['ejecutivo','ejecutivo']].forEach(([k,l])=>{if(vacio(p[k]))e.push(l)});
+      if(p.linea==='Otros'&&vacio(p.otro))e.push('cuál es la otra línea de seguro');
+    }
+  }
+  return e;
+}
+async function ppPerSave(nombre,id){
+  nombre=ppT(nombre);if(!nombre)return;const r={nombre_key:ppKey(nombre),nombre,identificacion:ppT(id)||null,updated_at:new Date().toISOString()};
+  const{error}=ppT(id)?await sb.from('pp_personas').upsert(r,{onConflict:'nombre_key'}):await sb.from('pp_personas').upsert(r,{onConflict:'nombre_key',ignoreDuplicates:true});
+  if(error)console.warn('pp_personas',error);
+}
+async function ppGuardar(){
+  const er=ppVal(),box=$('pp-err');
+  if(er.length){box.innerHTML=`<b>Falta o hay que revisar:</b> ${er.map(esc).join(' · ')}`;box.scrollIntoView({behavior:'smooth',block:'center'});return}
+  box.innerHTML='';const b=$('pp-save'),bt=b.textContent;b.disabled=true;b.textContent='Guardando…';
+  const F=PP.f,c=F.c,p=F.p,me=ppEmail(),mn=ppNom();let cliOk=false;
+  try{
+    let cid=p.cliente_id||null,cn=ppT(p.cliente);
+    if(F.modo==='cliente'){
+      const{data,error}=await sb.from('pp_clientes').insert({nombre:ppT(c.nombre),cedula:ppT(c.cedula),direccion_senas:ppT(c.senas),provincia:c.provincia,canton:c.canton,distrito:ppT(c.distrito),telefonos:ppT(c.telefonos),correos:ppT(c.correos),tipo_cliente:c.tipo,idioma:c.idioma,consorcio_siseg:ppT(c.consorcio)||null,contacto:ppT(c.contacto)||null,created_by:me,created_by_nombre:mn}).select('id').single();
+      if(error)throw error;cid=data.id;cn=ppT(c.nombre);cliOk=true;
+      await ppPerSave(cn,c.cedula);
+    }
+    if(F.modo==='pp'||F.conPP){
+      const si=p.aseg==='si';
+      const{error}=await sb.from('pp_prepolizas').insert({cliente_id:cid,cliente_nombre:cn,cliente_es_asegurado:si,asegurado_nombre:si?null:ppT(p.an),asegurado_identificacion:si?null:ppT(p.aid),
+        tipo_tramite:p.tramite,aseguradora:p.aseguradora,linea:p.linea,linea_otro:p.linea==='Otros'?ppT(p.otro):null,forma_pago:p.pago,moneda:p.moneda,fecha_emision:p.fecha,
+        corredor:p.corredor,ejecutivo:p.ejecutivo,estado:'enviado',created_by:me,created_by_nombre:mn});
+      if(error)throw error;
+      await ppPerSave(cn,null);if(!si)await ppPerSave(p.an,p.aid);
+    }
+    toast(F.modo==='cliente'?(F.conPP?'Cliente guardado y pre póliza enviada.':'Cliente guardado.'):'Pre póliza enviada.');
+    PPD.cli=null;PPD.per=null;PPD.regs=null;PP.f=null;PP.tab=ppSub()?'historial':(F.modo==='cliente'&&!F.conPP?'clientes':'bandeja');render();
+  }catch(e){
+    console.error(e);
+    if(cliOk){const cid=(await ppCli(true)).find(x=>ppKey(x.cedula)===ppKey(c.cedula))?.id||null;F.modo='pp';p.cliente=ppT(c.nombre);p.cliente_id=cid;await ppCrear();
+      $('pp-err').innerHTML=`El cliente <b>sí quedó guardado</b>, pero la pre póliza no se pudo enviar: ${esc(ppErr(e))}. Revisa y vuelve a darle a "Enviar pre póliza".`;return}
+    box.innerHTML='No se pudo guardar: '+esc(ppErr(e));b.disabled=false;b.textContent=bt;
+  }
+}
+
+/* ---------- detalle de una pre póliza ---------- */
+async function ppVer(id,volver){
+  const L=await ppRegs(),cl=await ppCli();let r=L.find(x=>x.id===id);const el=$('pp-body');
+  if(!r){el.innerHTML=`<div class="info">No se encontró esa pre póliza.</div><button class="btn" onclick="${volver}">← Volver</button>`;return}
+  if((ppTester()?PP.vista==='recibe':G.me?.role==='operador')&&r.estado==='enviado'){
+    const{data,error}=await sb.from('pp_prepolizas').update({estado:'en_proceso',abierto_por:ppNom(),abierto_at:new Date().toISOString()}).eq('id',id).eq('estado','enviado').select();
+    if(!error&&data?.[0]){Object.assign(r,data[0]);toast('La pre póliza quedó en proceso.')}
+  }
+  const c=r.cliente_id&&cl.find(x=>x.id===r.cliente_id),ges=ppGes();
+  const secs=[['Cliente y asegurado',[['Cliente',r.cliente_nombre],['¿El cliente es el asegurado?',r.cliente_es_asegurado?'Sí':'No'],...(r.cliente_es_asegurado?[['Cédula del cliente',c?.cedula]]:[['Asegurado',r.asegurado_nombre],['Identificación del asegurado',r.asegurado_identificacion]])]],
+    ['Póliza',[['Tipo de trámite',r.tipo_tramite],['Aseguradora',r.aseguradora],['Línea de seguro',ppLin(r)],['Forma de pago',r.forma_pago],['Moneda',r.moneda],['Fecha de emisión',r.fecha_emision?fDs(r.fecha_emision):'']]],
+    ['Corredor y ejecutivo',[['Corredor',r.corredor],['Ejecutivo',r.ejecutivo==='El corredor es el ejecutivo'?`${r.corredor} (el corredor es el ejecutivo)`:r.ejecutivo]]]];
+  if(c)secs.push(['Datos del cliente registrado',ppCliRows(c).slice(1)]);
+  const acts=[];
+  if(ges){
+    if(r.estado==='enviado')acts.push(`<button class="btn" onclick="ppEstado(${id},'en_proceso')">Marcar en proceso</button>`);
+    if(r.estado==='enviado'||r.estado==='en_proceso')acts.push(`<button class="btn primary" onclick="ppEstado(${id},'finalizado')">Finalizar</button>`);
+    if(r.estado==='finalizado')acts.push(`<button class="lnk" onclick="ppEstado(${id},'en_proceso')">Volver a poner en proceso</button>`);
+    if(r.estado!=='retirado')acts.push(`<button class="lnk red" onclick="ppEstado(${id},'retirado')">Retirar</button>`);
+  }else if(r.estado==='enviado'&&r.created_by===ppEmail())acts.push(`<button class="lnk red" onclick="ppEstado(${id},'retirado')">Retirar (me equivoqué)</button>`);
+  el.innerHTML=`<div class="pp-det"><button class="lnk" onclick="${volver}" style="margin-bottom:12px">← Volver</button>
+    <div class="pp-it-h" style="margin-bottom:12px"><div><h2 style="margin:0">${esc(r.cliente_nombre)}</h2><small>${esc(r.tipo_tramite)} · ${esc(r.aseguradora)} · ${esc(ppLin(r))}</small></div>${ppChip(r.estado)}</div>
+    <section class="pp-card">${ppProg(r)}<p class="small muted" style="margin:10px 0 0">Subida por <b>${esc(r.created_by_nombre||r.created_by)}</b> el ${fDT(r.created_at)}${r.abierto_por?` · En proceso con <b>${esc(r.abierto_por)}</b>`:''}${r.finalizado_por?` · Finalizada por <b>${esc(r.finalizado_por)}</b>`:''}</p></section>
+    ${acts.length?`<div class="pp-acts">${acts.join('')}</div>`:''}
+    ${ppSecs(secs)}</div>`;
+}
+async function ppEstado(id,est){
+  const now=new Date().toISOString(),n=ppNom();
+  if(est==='finalizado'&&!confirm('¿Marcar esta pre póliza como finalizada?'))return;
+  if(est==='retirado'&&!confirm('¿Retirar esta pre póliza? No se borra: queda en el historial como "Retirada".'))return;
+  const r=(PPD.regs||[]).find(x=>x.id===id);
+  const patch=est==='en_proceso'?(r?.estado==='finalizado'?{estado:est,finalizado_por:null,finalizado_at:null}:{estado:est,abierto_por:n,abierto_at:now})
+    :est==='finalizado'?{estado:est,finalizado_por:n,finalizado_at:now,...(r?.abierto_at?{}:{abierto_por:n,abierto_at:now})}:{estado:est,retirado_por:n,retirado_at:now};
+  const{error}=await sb.from('pp_prepolizas').update(patch).eq('id',id);
+  if(error){toast('No se pudo cambiar: '+ppErr(error));return}
+  PPD.regs=null;toast({en_proceso:'Quedó en proceso.',finalizado:'Pre póliza finalizada.',retirado:'Pre póliza retirada.'}[est]);ppRefresh();
+}
+
+/* ---------- bandeja (gestores) ---------- */
+const PP_FIL=[['atender','Por atender',r=>r.estado==='enviado'||r.estado==='en_proceso'],['enviado','Nuevas',r=>r.estado==='enviado'],['en_proceso','En proceso',r=>r.estado==='en_proceso'],['finalizado','Finalizadas',r=>r.estado==='finalizado'],['retirado','Retiradas',r=>r.estado==='retirado'],['todos','Todas',()=>true]];
+async function ppBandeja(){
+  if(PP.sel)return ppVer(PP.sel,'PP.sel=null;ppRefresh()');
+  const L=await ppRegs();await ppCli();
+  const m0=tISO(new Date(hoyD().getFullYear(),hoyD().getMonth(),1));
+  $('pp-body').innerHTML=`<div class="kpis"><div class="kpi main"><span>Nuevas sin abrir</span><strong>${L.filter(r=>r.estado==='enviado').length}</strong></div><div class="kpi"><span>En proceso</span><strong>${L.filter(r=>r.estado==='en_proceso').length}</strong></div><div class="kpi"><span>Finalizadas este mes</span><strong>${L.filter(r=>r.estado==='finalizado'&&(r.finalizado_at||'')>=m0).length}</strong></div></div>
+   <div class="seg" role="radiogroup" aria-label="Estado" style="flex-wrap:wrap">${PP_FIL.map(([k,l,f])=>`<button role="radio" aria-checked="${PP.est===k}" onclick="PP.est='${k}';ppBandeja()">${l} <b style="opacity:.7">${L.filter(f).length}</b></button>`).join('')}</div>
+   <div class="cs-bar"><input class="grow" id="pp-q" placeholder="Buscar por cliente, asegurado, identificación, aseguradora o quién la subió" value="${esc(PP.q)}" oninput="PP.q=this.value;ppDrawB()"></div>
+   <div id="pp-list"></div>`;
+  ppDrawB();
+}
+function ppDrawB(){
+  const f=(PP_FIL.find(x=>x[0]===PP.est)||PP_FIL[0])[2],q=ppKey(PP.q);
+  const L=(PPD.regs||[]).filter(f).filter(r=>!q||ppKey([r.cliente_nombre,r.asegurado_nombre,r.asegurado_identificacion,r.aseguradora,r.linea,r.linea_otro,r.tipo_tramite,r.created_by_nombre,r.corredor,r.ejecutivo].join(' ')).includes(q));
+  if(PP.est==='atender')L.sort((a,b)=>a.created_at<b.created_at?-1:1);
+  $('pp-list').innerHTML=L.length?`<div class="pp-items">${L.map(r=>ppItem(r)).join('')}</div><p class="small muted">${plural(L.length,'pre póliza','pre pólizas')}</p>`:'<p class="empty">No hay pre pólizas aquí.</p>';
+}
+function ppItem(r,prog){
+  return`<button class="pp-it" onclick="ppAbrir(${r.id})"><div class="pp-it-h"><div><b>${esc(r.cliente_nombre)}</b>${!r.cliente_es_asegurado&&r.asegurado_nombre?`<small>Asegurado: ${esc(r.asegurado_nombre)}</small>`:''}
+    <small>${esc(r.tipo_tramite)} · ${esc(r.aseguradora)} · ${esc(ppLin(r))}</small></div>
+    <div class="pp-it-r">${ppChip(r.estado)}<small>${prog?'':`${esc(r.created_by_nombre||r.created_by)} · `}${fDT(r.created_at)}</small></div></div>${prog?ppProg(r):''}</button>`;
+}
+
+/* ---------- historial (quien sube) ---------- */
+async function ppHist(){
+  if(PP.sel)return ppVer(PP.sel,'PP.sel=null;ppRefresh()');
+  const me=ppEmail(),L=(await ppRegs()).filter(r=>r.created_by===me),C=(await ppCli()).filter(c=>c.created_by===me);
+  $('pp-body').innerHTML=`<div class="kpis"><div class="kpi"><span>Enviadas</span><strong>${L.filter(r=>r.estado==='enviado').length}</strong></div><div class="kpi"><span>En proceso</span><strong>${L.filter(r=>r.estado==='en_proceso').length}</strong></div><div class="kpi main"><span>Finalizadas</span><strong>${L.filter(r=>r.estado==='finalizado').length}</strong></div></div>
+   <section class="cs-sec"><h2>Mis pre pólizas</h2>${L.length?`<div class="pp-items">${L.map(r=>ppItem(r,true)).join('')}</div>`:`<div class="emptybox"><h2>Todavía no has enviado pre pólizas</h2><p>Cuando envíes una, aquí vas a ver cómo avanza.</p><button class="btn primary" onclick="ppIr('crear','pp')">Crear pre póliza</button></div>`}</section>
+   <section class="cs-sec"><h2>Clientes que creé</h2>${C.length?`<div class="tbl"><table><thead><tr><th>Nombre</th><th>Cédula</th><th>Tipo</th><th>Creado</th></tr></thead><tbody>${C.map(c=>`<tr><td>${esc(c.nombre)}${c.retirado?' <span class="pp-chip" style="--c:#66737C">Retirado</span>':''}</td><td class="cs-mono">${esc(c.cedula)}</td><td>${esc(c.tipo_cliente)}</td><td>${fDT(c.created_at)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">Todavía no has creado clientes.</p>'}</section>`;
+}
+
+/* ---------- clientes (gestores) ---------- */
+async function ppClientes(){
+  if(PP.csel)return ppVerCli(PP.csel);
+  await ppCli();
+  $('pp-body').innerHTML=`<div class="cs-bar"><input class="grow" id="pp-cq" placeholder="Buscar por nombre, cédula, teléfono o correo" value="${esc(PP.cq)}" oninput="PP.cq=this.value;ppDrawC()">
+    <label class="small" style="display:flex;gap:6px;align-items:center;white-space:nowrap"><input type="checkbox" style="width:auto" ${PP.cret?'checked':''} onchange="PP.cret=this.checked;ppDrawC()">Ver retirados</label></div><div id="pp-clist"></div>`;
+  ppDrawC();
+}
+function ppDrawC(){
+  const q=ppKey(PP.cq),L=(PPD.cli||[]).filter(c=>PP.cret||!c.retirado).filter(c=>!q||ppKey([c.nombre,c.cedula,c.telefonos,c.correos,c.contacto,c.consorcio_siseg].join(' ')).includes(q));
+  $('pp-clist').innerHTML=L.length?`<div class="tbl"><table><thead><tr><th>Nombre</th><th>Cédula</th><th>Tipo</th><th>Teléfonos</th><th>Creado por</th><th>Fecha</th></tr></thead><tbody>
+    ${L.map(c=>`<tr class="pp-click" onclick="ppAbrirCli(${c.id})"><td><b>${esc(c.nombre)}</b>${c.retirado?' <span class="pp-chip" style="--c:#66737C">Retirado</span>':''}</td><td class="cs-mono">${esc(c.cedula)}</td><td>${esc(c.tipo_cliente)}</td><td>${esc(c.telefonos)}</td><td>${esc(c.created_by_nombre||c.created_by)}</td><td>${fDT(c.created_at)}</td></tr>`).join('')}
+    </tbody></table></div><p class="small muted">${plural(L.length,'cliente','clientes')}</p>`:'<p class="empty">No hay clientes que coincidan.</p>';
+}
+async function ppVerCli(id){
+  const c=(await ppCli()).find(x=>x.id===id),R=(await ppRegs()).filter(r=>r.cliente_id===id);
+  if(!c){$('pp-body').innerHTML='<div class="info">No se encontró ese cliente.</div><button class="btn" onclick="PP.csel=null;ppRefresh()">← Volver</button>';return}
+  $('pp-body').innerHTML=`<div class="pp-det"><button class="lnk" onclick="PP.csel=null;ppRefresh()" style="margin-bottom:12px">← Volver</button>
+    <div class="pp-it-h" style="margin-bottom:12px"><div><h2 style="margin:0">${esc(c.nombre)}</h2><small>Creado por ${esc(c.created_by_nombre||c.created_by)} el ${fDT(c.created_at)}</small></div>${c.retirado?'<span class="pp-chip" style="--c:#66737C">Retirado</span>':''}</div>
+    ${!c.retirado&&ppGes()?`<div class="pp-acts"><button class="lnk red" onclick="ppRetCli(${id})">Retirar cliente</button></div>`:''}
+    ${ppSecs([['Datos del cliente',ppCliRows(c)]])}
+    <section class="cs-sec"><h2>Pre pólizas de este cliente</h2>${R.length?`<div class="pp-items">${R.map(r=>`<button class="pp-it" onclick="PP.tab='bandeja';PP.csel=null;PP.sel=${r.id};render()"><div class="pp-it-h"><div><b>${esc(r.tipo_tramite)} · ${esc(r.aseguradora)}</b><small>${esc(ppLin(r))} · ${fDT(r.created_at)}</small></div>${ppChip(r.estado)}</div></button>`).join('')}</div>`:'<p class="empty">Sin pre pólizas.</p>'}</section></div>`;
+}
+async function ppRetCli(id){
+  if(!confirm('¿Retirar este cliente? No se borra: queda guardado como "Retirado" y deja de salir en las búsquedas.'))return;
+  const{error}=await sb.from('pp_clientes').update({retirado:true,retirado_por:ppNom(),retirado_at:new Date().toISOString()}).eq('id',id);
+  if(error){toast('No se pudo retirar: '+ppErr(error));return}PPD.cli=null;toast('Cliente retirado.');ppRefresh();
+}
+
+/* ---------- tarjeta en Inicio ---------- */
+async function homePP(){
+  if(!ppOn()){const el=document.createElement('article');el.className='mod pp-obra';el.style.cssText='--m1:#6A4C93;--m2:#9B7BC4';
+    el.innerHTML=`<button class="mod-main" onclick="irMod('pp')" aria-label="Pre pólizas y clientes (en construcción)"><div class="mod-top"><span class="mod-ic">${ICO_PP}</span><span class="mod-al">En construcción</span></div><h2>Pre pólizas y clientes</h2><p>Muy pronto vas a poder crear clientes y pre pólizas desde aquí.</p></button>`;
+    $('mods')?.appendChild(el);return}
+  let L=[],ok=true;try{L=await ppRegs()}catch(e){ok=false}
+  const me=ppEmail(),sub=ppSub();if(sub)L=L.filter(r=>r.created_by===me);
+  const n=e=>ok?L.filter(r=>r.estado===e).length:'—',m0=tISO(new Date(hoyD().getFullYear(),hoyD().getMonth(),1));
+  const nuevas=ok?L.filter(r=>r.estado==='enviado').length:0;
+  const el=document.createElement('article');el.className='mod';el.style.cssText='--m1:#6A4C93;--m2:#9B7BC4';
+  el.innerHTML=`<button class="mod-main" onclick="ppIr('${sub?'historial':'bandeja'}')" aria-label="Abrir Pre pólizas y clientes"><div class="mod-top"><span class="mod-ic">${ICO_PP}</span>${!sub&&nuevas?`<span class="mod-al">${plural(nuevas,'nueva sin abrir','nuevas sin abrir')}</span>`:''}</div>
+    <h2>Pre pólizas y clientes</h2><p>${sub?'Crea clientes y pre pólizas, y mira cómo avanza lo que enviaste.':'Pre pólizas y clientes nuevos que envía la oficina, listos para copiar.'}</p>
+    <div class="mod-st"><div><strong>${n('enviado')}</strong><span>${sub?'Enviadas':'Nuevas'}</span></div><div><strong>${n('en_proceso')}</strong><span>En proceso</span></div><div><strong>${sub?n('finalizado'):ok?L.filter(r=>r.estado==='finalizado'&&(r.finalizado_at||'')>=m0).length:'—'}</strong><span>${sub?'Finalizadas':'Finalizadas este mes'}</span></div></div>
+    <span class="mod-go">Abrir <span aria-hidden="true">→</span></span></button>
+   <div class="mod-lk">${sub?`<button onclick="ppIr('crear','cliente')">Crear cliente</button><button onclick="ppIr('crear','pp')">Crear pre póliza</button><button onclick="ppIr('historial')">Mi historial</button>`:`<button onclick="PP.est='atender';ppIr('bandeja')">Bandeja</button><button onclick="ppIr('clientes')">Clientes</button>`}</div>`;
+  $('mods')?.appendChild(el);ppLive();
+}
+function renderHomeSub(){
+  const d=new Date(),fecha=`${DIAS[d.getDay()][0].toUpperCase()+DIAS[d.getDay()].slice(1)}, ${d.getDate()} de ${MESES[d.getMonth()].toLowerCase()} de ${d.getFullYear()}`;
+  $('app').innerHTML=`<div class="home fade"><div class="home-h"><div><p class="home-f">${fecha}</p><h1>${esc(saludo())}</h1><p class="muted" style="margin:4px 0 0">Elige un módulo para empezar.</p></div></div><div class="mods" id="mods"></div></div>`;
+  homePP();
 }
 
 addEventListener('keydown',e=>{if(e.key==='Escape')revClose()});
