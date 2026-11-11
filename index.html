@@ -746,6 +746,17 @@ body.wide main{max-width:1560px}
 .pp-it-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
 .pp-it-h b{font-size:15px}.pp-it-h small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
 .pp-it-r{text-align:right}
+.pp-ac{position:relative}
+.pp-acl{position:absolute;top:calc(100% - 2px);left:0;right:0;z-index:40;background:#fff;border:1px solid var(--line-strong);border-radius:10px;box-shadow:0 14px 34px rgba(20,40,50,.14);max-height:290px;overflow:auto;padding:4px}
+.pp-acl[hidden]{display:none}
+.pp-ac>span#pp-cli-hint,.pp-ac>small{order:3}
+.pp-aco{padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--ink)}
+.pp-aco b{display:block;font-weight:600;font-size:14px}.pp-aco small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.pp-aco:hover,.pp-aco.on{background:var(--brand-soft)}
+.pp-acv{padding:10px;font-size:13px;font-weight:400;color:var(--muted)}
+.pp-hv{flex-wrap:wrap}.pp-hv b{opacity:.7;margin-left:3px}
+.pp-hi{position:relative}.pp-hi .pp-it{padding-bottom:34px}
+.pp-hb{position:absolute;right:16px;bottom:12px}
 .pp-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#6A4C93;background:#F1ECF8;border-radius:6px;padding:1px 7px}
 .pp-tag.c{color:var(--brand);background:var(--brand-soft)}
 tr.pp-click{cursor:pointer}
@@ -1517,7 +1528,7 @@ const ppSub=()=>ppTester()?PP.vista==='sube':ppRolSub();
 const ppGes=()=>ppTester()?PP.vista!=='sube':(G.admin||G.me?.role==='operador');
 const ppEmail=()=>(G.session?.user?.email||G.me?.email||'').toLowerCase();
 const ppNom=()=>G.me?.nombre||G.session?.user?.user_metadata?.full_name||ppEmail();
-const PP={vista:'recibe',tipo:'',tab:null,f:null,q:'',est:'atender',sel:null,cq:'',csel:null,cret:false};
+const PP={hv:'curso',hq:'',ht:'',vista:'recibe',tipo:'',tab:null,f:null,q:'',est:'atender',sel:null,cq:'',csel:null,cret:false};
 const PPD={cli:null,per:null,regs:null,todo:null,live:false};
 const PP_ASEG=['ADISA','ASSA','BMI','Davivienda','INS','LAFISE','MAPFRE','MNK','PALIG','Qualitas'];
 const PP_LIN=['Autos','Equipo electrónico','Fronting','Incendio','Gastos médicos','Responsabilidad civil','Riesgos del trabajo','Vida','Otros'];
@@ -1627,7 +1638,6 @@ async function ppCrear(){
     return;
   }
   const c=F.c,p=F.p,nm=ppNombres();
-  const dl=`<datalist id="pp-dl">${[...nm.values()].map(x=>`<option value="${esc(x.nombre)}">`).join('')}</datalist>`;
   let h='';
   if(F.modo==='cliente'){
     h+=`<section class="pp-card"><h3>Datos del cliente</h3><div class="pp-grid">
@@ -1651,8 +1661,8 @@ async function ppCrear(){
     h+=`<section class="pp-card"><h3>Pre póliza</h3><div class="pp-grid">${ppSiNo(p.aseg,'ppSetAseg','¿El cliente es el asegurado?')}`;
     if(p.aseg){
       h+=F.modo==='cliente'?`<div class="pp-f full"><span>Cliente</span><div class="pp-ro">${esc(c.nombre||'(el nombre que pusiste arriba)')}</div></div>`
-        :ppIn('p','cliente','Nombre del cliente',{req:1,full:1,list:'pp-dl',ch:'ppCliPick()',ph:'Escribe y elige si ya existe',hint:lk?`<small class="pp-ok">✓ Cliente registrado · cédula ${esc(lk.cedula)}</small>`:''});
-      if(p.aseg==='no')h+=ppIn('p','an','Nombre del asegurado',{req:1,list:'pp-dl',ch:'ppAsegPick()',ph:'Escribe y elige si ya existe'})+ppIn('p','aid','Identificación del asegurado',{req:1});
+        :ppAcIn('cliente','Nombre del cliente',{full:1,hint:`<span id="pp-cli-hint">${ppCliHint()}</span>`});
+      if(p.aseg==='no')h+=ppAcIn('an','Nombre del asegurado')+ppIn('p','aid','Identificación del asegurado',{req:1});
       h+=`${ppSel('p','tramite','Tipo de trámite',PP_TRA,{req:1})}${ppSel('p','aseguradora','Aseguradora',PP_ASEG,{req:1})}
         ${ppSel('p','linea','Línea de seguro',PP_LIN,{req:1,ch:'ppCrear()'})}
         ${p.linea==='Otros'?ppIn('p','otro','¿Cuál línea?',{req:1}):''}
@@ -1663,14 +1673,49 @@ async function ppCrear(){
     h+=`</div></section>`;
   }
   const lbl=F.modo==='cliente'?(F.conPP?'Guardar cliente y enviar pre póliza':'Guardar cliente'):'Enviar pre póliza';
-  el.innerHTML=`<div class="pp-form">${dl}<p class="small muted" style="margin:0 0 12px">Los campos con <b style="color:var(--danger)">*</b> son obligatorios.</p>${h}
+  el.innerHTML=`<div class="pp-form"><p class="small muted" style="margin:0 0 12px">Los campos con <b style="color:var(--danger)">*</b> son obligatorios.</p>${h}
     <div class="err" id="pp-err"></div>
     <div class="pp-acts"><button class="btn primary" id="pp-save" onclick="ppGuardar()">${lbl}</button><button class="btn" onclick="ppCancelar()">Cancelar</button></div></div>`;
 }
 function ppCancelar(){if(!confirm('¿Cancelar? Lo que escribiste no se va a guardar.'))return;PP.f=null;ppCrear()}
-function ppCliPick(){const p=PP.f.p,m=ppNombres().get(ppKey(p.cliente));p.cliente_id=m?.cli||null;if(m)p.cliente=m.nombre;ppCrear()}
-function ppAsegPick(){const p=PP.f.p,m=ppNombres().get(ppKey(p.an));if(!m)return;p.an=m.nombre;$('pp-p-an').value=m.nombre;
-  if(m.id&&!ppT(p.aid)){p.aid=m.id;$('pp-p-aid').value=m.id;toast('Se completó la identificación que ya estaba registrada.')}}
+/* ---------- buscador de nombres (clientes y asegurados ya registrados) ---------- */
+const ppN=s=>ppKey(s).normalize('NFD').replace(/[̀-ͯ]/g,'');
+let AC=null;
+const ppAcIn=(k,l,x={})=>`<label class="pp-f pp-ac${x.full?' full':''}"><span>${l}<b> *</b></span><input id="pp-p-${k}" value="${esc(PP.f.p[k])}" placeholder="Escribe para buscar o pon uno nuevo" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="pp-acl-${k}"
+  oninput="PP.f.p.${k}=this.value;ppAcShow('${k}')" onfocus="ppAcShow('${k}')" onkeydown="ppAcKey(event,'${k}')" onblur="ppAcBlur('${k}')"><div class="pp-acl" id="pp-acl-${k}" role="listbox" hidden></div>${x.hint||''}</label>`;
+function ppCliHint(){const p=PP.f.p,lk=p.cliente_id&&(PPD.cli||[]).find(x=>x.id===p.cliente_id);
+  return lk?`<small class="pp-ok">✓ Cliente registrado · cédula ${esc(lk.cedula)}</small>`:ppT(p.cliente)?'<small class="muted">No está registrado como cliente. El nombre se guarda para la próxima vez.</small>':''}
+function ppAcShow(k){
+  const inp=$('pp-p-'+k),box=$('pp-acl-'+k);if(!inp||!box)return;
+  const w=ppN(inp.value).split(' ').filter(Boolean);
+  const all=[...ppNombres().values()].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+  const L=all.filter(x=>{const n=ppN(x.nombre)+' '+ppN(x.id);return w.every(t=>n.includes(t))});
+  if(w.length)L.sort((a,b)=>(ppN(b.nombre).startsWith(w.join(' '))-ppN(a.nombre).startsWith(w.join(' '))));
+  AC={k,items:L.slice(0,60),i:-1};
+  box.innerHTML=!all.length?'<div class="pp-acv">Todavía no hay nombres guardados. Escribe el nombre completo.</div>'
+    :AC.items.length?AC.items.map((x,i)=>`<div class="pp-aco" role="option" id="pp-aco-${i}" onmousedown="event.preventDefault();ppAcPick(${i})"><b>${esc(x.nombre)}</b><small>${x.cli?`Cliente registrado · cédula ${esc(x.id)}`:x.id?`Identificación ${esc(x.id)}`:'Usado antes'}</small></div>`).join('')+(L.length>60?`<div class="pp-acv">Hay ${L.length} coincidencias. Sigue escribiendo para filtrar.</div>`:'')
+    :`<div class="pp-acv">No hay nadie con ese nombre. Se va a guardar como nuevo.</div>`;
+  box.hidden=false;inp.setAttribute('aria-expanded','true');
+}
+function ppAcHide(k){const b=$('pp-acl-'+k);if(b)b.hidden=true;$('pp-p-'+k)?.setAttribute('aria-expanded','false')}
+function ppAcKey(e,k){
+  const b=$('pp-acl-'+k);if(!AC||AC.k!==k||!b||b.hidden){if(e.key==='ArrowDown'){ppAcShow(k);e.preventDefault()}return}
+  const n=AC.items.length;
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(!n)return;AC.i=(AC.i+(e.key==='ArrowDown'?1:-1)+n)%n;
+    b.querySelectorAll('.pp-aco').forEach((el,i)=>el.classList.toggle('on',i===AC.i));$('pp-aco-'+AC.i)?.scrollIntoView({block:'nearest'})}
+  else if(e.key==='Enter'){e.preventDefault();if(AC.i>=0)ppAcPick(AC.i);else if(n===1)ppAcPick(0);else ppAcHide(k)}
+  else if(e.key==='Escape'){ppAcHide(k)}
+}
+function ppAcPick(i){
+  const x=AC?.items[i];if(!x)return;const k=AC.k,p=PP.f.p;
+  p[k]=x.nombre;$('pp-p-'+k).value=x.nombre;ppAcHide(k);ppAcLink(k,true);
+}
+function ppAcBlur(k){setTimeout(()=>{ppAcHide(k);ppAcLink(k,false)},120)}
+function ppAcLink(k,elegido){
+  const p=PP.f?.p;if(!p)return;const m=ppNombres().get(ppKey(p[k]));
+  if(k==='cliente'){p.cliente_id=m?.cli||null;if(m)p.cliente=m.nombre;const h=$('pp-cli-hint');if(h)h.innerHTML=ppCliHint()}
+  if(k==='an'&&m&&m.id&&!ppT(p.aid)){p.aid=m.id;const a=$('pp-p-aid');if(a)a.value=m.id;if(elegido)toast('Se completó la identificación que ya estaba registrada.')}
+}
 function ppVal(){
   const F=PP.f,c=F.c,p=F.p,e=[],vacio=v=>!ppT(v);
   if(F.modo==='cliente'){
@@ -1781,7 +1826,7 @@ async function ppEstado(k,est){
   if(est==='finalizado'&&!confirm(`¿Marcar ${cosa} como ${cli?'finalizado':'finalizada'}?`))return;
   if(est==='retirado'&&!confirm(`¿Retirar ${cosa}? No se borra: queda en el historial como "${cli?'Retirado':'Retirada'}".`))return;
   const r=(cli?PPD.cli:PPD.regs||[])?.find(x=>x.id===id),prev=r?(cli?ppEstC(r):r.estado):'';
-  const patch=est==='en_proceso'?(prev==='finalizado'?{estado:est,finalizado_por:null,finalizado_at:null}:{estado:est,abierto_por:n,abierto_at:now})
+  const patch=est==='en_proceso'?(prev==='finalizado'?{estado:est,finalizado_por:null,finalizado_at:null,archivado:false}:{estado:est,abierto_por:n,abierto_at:now})
     :est==='finalizado'?{estado:est,finalizado_por:n,finalizado_at:now,...(r?.abierto_at?{}:{abierto_por:n,abierto_at:now})}:{estado:est,retirado_por:n,retirado_at:now};
   if(cli&&est==='retirado')patch.retirado=true;
   const{error}=await sb.from(tabla).update(patch).eq('id',id);
@@ -1817,13 +1862,38 @@ function ppItem(r,prog){
 }
 
 /* ---------- historial (quien sube) ---------- */
+const PP_HV=[['curso','En curso',r=>r.estado==='enviado'||r.estado==='en_proceso'],['fin','Finalizados',r=>r.estado==='finalizado'&&!r.archivado],['arch','Archivo',r=>r.archivado||r.estado==='retirado']];
 async function ppHist(){
   if(PP.sel)return ppVerK(PP.sel,'PP.sel=null;ppRefresh()');
-  const me=ppEmail(),T=(await ppTodo()).filter(r=>r.created_by===me),L=T.filter(r=>r._t==='p'),C=T.filter(r=>r._t==='c');
-  const vacio=(t,x,m)=>`<div class="emptybox"><h2>${t}</h2><p>Cuando envíes uno, aquí vas a ver cómo avanza.</p><button class="btn primary" onclick="ppIr('crear','${m}')">${x}</button></div>`;
-  $('pp-body').innerHTML=`<div class="kpis"><div class="kpi"><span>Enviados</span><strong>${T.filter(r=>r.estado==='enviado').length}</strong></div><div class="kpi"><span>En proceso</span><strong>${T.filter(r=>r.estado==='en_proceso').length}</strong></div><div class="kpi main"><span>Finalizados</span><strong>${T.filter(r=>r.estado==='finalizado').length}</strong></div></div>
-   <section class="cs-sec"><h2>Mis pre pólizas</h2>${L.length?`<div class="pp-items">${L.map(r=>ppItem(r,true)).join('')}</div>`:vacio('Todavía no has enviado pre pólizas','Crear pre póliza','pp')}</section>
-   <section class="cs-sec"><h2>Mis clientes</h2>${C.length?`<div class="pp-items">${C.map(r=>ppItem(r,true)).join('')}</div>`:vacio('Todavía no has creado clientes','Crear cliente','cliente')}</section>`;
+  const me=ppEmail();PPD.mio=(await ppTodo()).filter(r=>r.created_by===me);
+  const T=PPD.mio,hv=PP.hv||'curso';
+  $('pp-body').innerHTML=`<div class="seg pp-hv" role="radiogroup" aria-label="Ver">${PP_HV.map(([k,l,f])=>`<button role="radio" aria-checked="${hv===k}" onclick="PP.hv='${k}';ppHist()">${l} <b>${T.filter(f).length}</b></button>`).join('')}</div>
+   <div class="cs-bar"><input class="grow" placeholder="Buscar por nombre, cédula o aseguradora" value="${esc(PP.hq||'')}" oninput="PP.hq=this.value;ppDrawH()">
+    <select style="width:auto" onchange="PP.ht=this.value;ppDrawH()"><option value="">Todo</option><option value="p" ${PP.ht==='p'?'selected':''}>Solo pre pólizas</option><option value="c" ${PP.ht==='c'?'selected':''}>Solo clientes</option></select></div>
+   <div id="pp-hlist"></div>`;
+  ppDrawH();
+}
+function ppDrawH(){
+  const hv=PP.hv||'curso',f=PP_HV.find(x=>x[0]===hv)[2],q=ppN(PP.hq||'');
+  const L=(PPD.mio||[]).filter(f).filter(r=>!PP.ht||r._t===PP.ht).filter(r=>!q||ppN([r.cliente_nombre,r.nombre,r.cedula,r.asegurado_nombre,r.aseguradora,r.tipo_tramite].join(' ')).includes(q));
+  if(hv!=='curso')L.sort((a,b)=>((b.finalizado_at||b.retirado_at||b.created_at)>(a.finalizado_at||a.retirado_at||a.created_at)?1:-1));
+  const msg={curso:['No tienes nada en curso','Todo lo que envíes aparece aquí hasta que lo finalicen.'],fin:['No hay finalizados por revisar','Cuando terminen algo tuyo, aparece aquí. Luego lo puedes archivar.'],arch:['El archivo está vacío','Aquí quedan guardados los finalizados que archives y los retirados.']}[hv];
+  const fin=hv==='fin'&&L.length?`<div class="pp-acts"><span class="small muted">Ya están listos. Archívalos para que no estorben; siempre los encuentras en "Archivo".</span><button class="btn sm" onclick="ppArchTodos()">Archivar todos (${L.length})</button></div>`:'';
+  $('pp-hlist').innerHTML=L.length?`${fin}<div class="pp-items">${L.map(r=>`<div class="pp-hi">${ppItem(r,true)}${hv==='fin'?`<button class="lnk pp-hb" onclick="ppArch('${r._k}',true)">Archivar</button>`:hv==='arch'&&r.archivado&&r.estado!=='retirado'?`<button class="lnk pp-hb" onclick="ppArch('${r._k}',false)">Sacar del archivo</button>`:''}</div>`).join('')}</div>`
+    :`<div class="emptybox"><h2>${msg[0]}</h2><p>${msg[1]}</p>${hv==='curso'?`<div class="pp-acts" style="justify-content:center;margin:0"><button class="btn primary" onclick="ppIr('crear','pp')">Crear pre póliza</button><button class="btn" onclick="ppIr('crear','cliente')">Crear cliente</button></div>`:''}</div>`;
+}
+async function ppArch(k,val,silent){
+  const{error}=await sb.rpc('pp_archivar',{p_tipo:k[0],p_id:+k.slice(1),p_val:val});
+  if(error){toast('No se pudo archivar: '+ppErr(error));return false}
+  const r=(PPD.mio||[]).find(x=>x._k===k);if(r)r.archivado=val;
+  const src=k[0]==='c'?PPD.cli:PPD.regs;const o=(src||[]).find(x=>x.id===+k.slice(1));if(o)o.archivado=val;
+  if(!silent){toast(val?'Archivado. Lo encuentras en "Archivo".':'Volvió a Finalizados.');ppHist()}return true;
+}
+async function ppArchTodos(){
+  const L=(PPD.mio||[]).filter(PP_HV[1][2]).filter(r=>!PP.ht||r._t===PP.ht);
+  if(!L.length||!confirm(`¿Archivar ${plural(L.length,'finalizado','finalizados')}? Los puedes ver cuando quieras en "Archivo".`))return;
+  let ok=0;for(const r of L)if(await ppArch(r._k,true,true))ok++;
+  toast(`${plural(ok,'archivado','archivados')}.`);ppHist();
 }
 
 /* ---------- clientes (gestores) ---------- */
