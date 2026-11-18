@@ -1526,7 +1526,7 @@ async function homeReproc(){
    crea clientes / pre pólizas y ve su historial con el avance.
    ===================================================================== */
 // Mientras PP_LISTO sea false, el módulo sale "En construcción" para todos menos para Ian (vista de prueba).
-const PP_LISTO=false;
+const PP_LISTO=true;
 const ppTester=()=>/^igarrett@/i.test(G.me?.email||G.session?.user?.email||'');
 const ppOn=()=>PP_LISTO||ppTester();
 const ppRolSub=()=>G.me?.role==='prepoliza';
