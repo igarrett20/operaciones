@@ -746,6 +746,12 @@ body.wide main{max-width:1560px}
 .pp-it-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
 .pp-it-h b{font-size:15px}.pp-it-h small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
 .pp-it-r{text-align:right}
+.pp-num{font-size:13px!important;color:var(--brand)}
+.pp-mailbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--pend-soft);border:1px solid #EBD3A1;border-radius:12px;padding:10px 14px;margin:0 0 16px}
+.pp-mailbar b{display:block;color:#6E4608}.pp-mailbar span{font-size:13px;color:var(--muted)}
+.pp-modal{position:fixed;inset:0;z-index:100;background:rgba(20,35,45,.45);display:grid;place-items:center;padding:16px;animation:fadeUp .2s ease}
+.pp-mbox{background:#fff;border-radius:14px;padding:20px 22px;width:100%;max-width:440px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.pp-mbox h3{margin:0 0 6px;font-size:18px}
 .pp-ac{position:relative}
 .pp-acl{position:absolute;top:calc(100% - 2px);left:0;right:0;z-index:40;background:#fff;border:1px solid var(--line-strong);border-radius:10px;box-shadow:0 14px 34px rgba(20,40,50,.14);max-height:290px;overflow:auto;padding:4px}
 .pp-acl[hidden]{display:none}
@@ -1594,8 +1600,8 @@ function renderPP(){
   $('app').innerHTML=`<div class="fade"><div class="cs-sub"><h1 style="margin:0">Pre pólizas y clientes</h1>${ppSub()||G.admin?`<button class="btn primary" onclick="ppIr('crear')">+ Crear</button>`:''}</div>
    ${ppTester()?`<div class="pp-test"><div><b>Vista de prueba</b><span>${PP_LISTO?'Solo tú ves este selector.':'Para los demás el módulo sale “En construcción”. Solo tú lo ves así.'}</span></div><div class="seg" role="radiogroup" aria-label="Ver como"><button role="radio" aria-checked="${PP.vista==='sube'}" onclick="ppVista('sube')">Quien sube</button><button role="radio" aria-checked="${PP.vista==='recibe'}" onclick="ppVista('recibe')">Quien recibe</button></div></div>`:''}
    <div class="tabs" role="tablist">${tabs.map(([id,l])=>`<button class="tab" role="tab" aria-selected="${PP.tab===id}" onclick="ppTab('${id}')">${l}</button>`).join('')}</div>
-   <div id="pp-body"><div class="loader"><span class="spin"></span><p class="muted">Cargando…</p></div></div></div>`;
-  ppLive();ppRefresh();
+   <div id="pp-mailbar"></div><div id="pp-body"><div class="loader"><span class="spin"></span><p class="muted">Cargando…</p></div></div></div>`;
+  ppLive();ppRefresh();ppMailCheck();
 }
 function ppRefresh(){const f={crear:ppCrear,historial:ppHist,bandeja:ppBandeja,clientes:ppClientes}[PP.tab];if(!$('pp-body')||!f)return;f().catch(e=>{console.error(e);if($('pp-body'))$('pp-body').innerHTML=`<div class="err">No se pudo cargar: ${esc(ppErr(e))}</div>`})}
 function ppTab(t){if(t!=='crear'||PP.tab!=='crear')PP.f=null;PP.tab=t;PP.sel=null;PP.csel=null;if(M!=='pp')irMod('pp');else render()}
@@ -1745,22 +1751,23 @@ async function ppGuardar(){
   const er=ppVal(),box=$('pp-err');
   if(er.length){box.innerHTML=`<b>Falta o hay que revisar:</b> ${er.map(esc).join(' · ')}`;box.scrollIntoView({behavior:'smooth',block:'center'});return}
   box.innerHTML='';const b=$('pp-save'),bt=b.textContent;b.disabled=true;b.textContent='Guardando…';
-  const F=PP.f,c=F.c,p=F.p,me=ppEmail(),mn=ppNom();let cliOk=false;
+  const F=PP.f,c=F.c,p=F.p,me=ppEmail(),mn=ppNom();let cliOk=false,cliRow=null,ppRow=null;
   try{
     let cid=p.cliente_id||null,cn=ppT(p.cliente);
     if(F.modo==='cliente'){
-      const{data,error}=await sb.from('pp_clientes').insert({nombre:ppT(c.nombre),cedula:ppT(c.cedula),direccion_senas:ppT(c.senas),provincia:c.provincia,canton:c.canton,distrito:ppT(c.distrito),telefonos:ppT(c.telefonos),correos:ppT(c.correos),tipo_cliente:c.tipo,idioma:c.idioma,consorcio_siseg:ppT(c.consorcio)||null,contacto:ppT(c.contacto)||null,created_by:me,created_by_nombre:mn}).select('id').single();
-      if(error)throw error;cid=data.id;cn=ppT(c.nombre);cliOk=true;
+      const{data,error}=await sb.from('pp_clientes').insert({nombre:ppT(c.nombre),cedula:ppT(c.cedula),direccion_senas:ppT(c.senas),provincia:c.provincia,canton:c.canton,distrito:ppT(c.distrito),telefonos:ppT(c.telefonos),correos:ppT(c.correos),tipo_cliente:c.tipo,idioma:c.idioma,consorcio_siseg:ppT(c.consorcio)||null,contacto:ppT(c.contacto)||null,created_by:me,created_by_nombre:mn}).select('*').single();
+      if(error)throw error;cid=data.id;cliRow=data;cn=ppT(c.nombre);cliOk=true;
       await ppPerSave(cn,c.cedula);
     }
     if(F.modo==='pp'||F.conPP){
       const si=p.aseg==='si';
-      const{error}=await sb.from('pp_prepolizas').insert({cliente_id:cid,cliente_nombre:cn,cliente_es_asegurado:si,asegurado_nombre:si?null:ppT(p.an),asegurado_identificacion:si?null:ppT(p.aid),
+      const{data:ppd,error}=await sb.from('pp_prepolizas').insert({cliente_id:cid,cliente_nombre:cn,cliente_es_asegurado:si,asegurado_nombre:si?null:ppT(p.an),asegurado_identificacion:si?null:ppT(p.aid),
         tipo_tramite:p.tramite,aseguradora:p.aseguradora,linea:p.linea,linea_otro:p.linea==='Otros'?ppT(p.otro):null,forma_pago:p.pago,moneda:p.moneda,fecha_emision:p.fecha,
-        corredor:p.corredor,ejecutivo:p.ejecutivo,estado:'enviado',created_by:me,created_by_nombre:mn});
-      if(error)throw error;
+        corredor:p.corredor,ejecutivo:p.ejecutivo,estado:'enviado',created_by:me,created_by_nombre:mn}).select('*').single();
+      if(error)throw error;ppRow=ppd;
       await ppPerSave(cn,null);if(!si)await ppPerSave(p.an,p.aid);
     }
+    ppMailNueva(cliRow,ppRow,cid&&(PPD.cli||[]).find(x=>x.id===cid)).catch(e=>console.warn(e));
     toast(F.modo==='cliente'?(F.conPP?'Cliente guardado y pre póliza enviada.':'Cliente guardado.'):'Pre póliza enviada.');
     PPD.cli=null;PPD.per=null;PPD.regs=null;PP.f=null;PP.tab=ppSub()?'historial':(F.modo==='cliente'&&!F.conPP?'clientes':'bandeja');render();
   }catch(e){
@@ -1803,7 +1810,7 @@ async function ppVer(id,volver){
   await ppAutoProceso('pp_prepolizas',id,r);
   const c=r.cliente_id&&cl.find(x=>x.id===r.cliente_id);
   const secs=[['Cliente y asegurado',[['Cliente',r.cliente_nombre],['¿El cliente es el asegurado?',r.cliente_es_asegurado?'Sí':'No'],...(r.cliente_es_asegurado?[['Cédula del cliente',c?.cedula]]:[['Asegurado',r.asegurado_nombre],['Identificación del asegurado',r.asegurado_identificacion]])]],
-    ['Póliza',[['Tipo de trámite',r.tipo_tramite],['Aseguradora',r.aseguradora],['Línea de seguro',ppLin(r)],['Forma de pago',r.forma_pago],['Moneda',r.moneda],['Fecha de emisión',r.fecha_emision?fDs(r.fecha_emision):'']]],
+    ['Póliza',[...(r.numero_prepoliza?[['Número de pre póliza',r.numero_prepoliza]]:[]),['Tipo de trámite',r.tipo_tramite],['Aseguradora',r.aseguradora],['Línea de seguro',ppLin(r)],['Forma de pago',r.forma_pago],['Moneda',r.moneda],['Fecha de emisión',r.fecha_emision?fDs(r.fecha_emision):'']]],
     ['Corredor y ejecutivo',[['Corredor',r.corredor],['Ejecutivo',r.ejecutivo==='El corredor es el ejecutivo'?`${r.corredor} (el corredor es el ejecutivo)`:r.ejecutivo]]]];
   if(c)secs.push([`Datos del cliente registrado ${c.estado&&c.estado!=='finalizado'?`· cliente ${String(PP_EST[ppEstC(c)]).toLowerCase()}`:''}`,ppCliRows(c).slice(1)]);
   el.innerHTML=`<div class="pp-det"><button class="lnk" onclick="${volver}" style="margin-bottom:12px">← Volver</button>
@@ -1821,17 +1828,20 @@ async function ppVerCli(id,volver='PP.csel=null;ppRefresh()'){
     ${ppSecs([['Datos del cliente',ppCliRows(c)]])}
     <section class="cs-sec"><h2>Pre pólizas de este cliente</h2>${R.length?`<div class="pp-items">${R.map(r=>`<button class="pp-it" onclick="ppAbrir('p${r.id}')"><div class="pp-it-h"><div><b>${esc(r.tipo_tramite)} · ${esc(r.aseguradora)}</b><small>${esc(ppLin(r))} · ${fDT(r.created_at)}</small></div>${ppChip(r.estado)}</div></button>`).join('')}</div>`:'<p class="empty">Sin pre pólizas.</p>'}</section></div>`;
 }
-async function ppEstado(k,est){
+async function ppEstado(k,est,num){
   const cli=k[0]==='c',id=+k.slice(1),tabla=cli?'pp_clientes':'pp_prepolizas',now=new Date().toISOString(),n=ppNom(),cosa=cli?'este cliente':'esta pre póliza';
-  if(est==='finalizado'&&!confirm(`¿Marcar ${cosa} como ${cli?'finalizado':'finalizada'}?`))return;
+  if(est==='finalizado'&&!cli&&num===undefined)return ppFinModal(id);
+  if(est==='finalizado'&&cli&&!confirm('¿Marcar este cliente como creado y finalizado? A quien lo solicitó le llega un correo con los datos.'))return;
   if(est==='retirado'&&!confirm(`¿Retirar ${cosa}? No se borra: queda en el historial como "${cli?'Retirado':'Retirada'}".`))return;
   const r=(cli?PPD.cli:PPD.regs||[])?.find(x=>x.id===id),prev=r?(cli?ppEstC(r):r.estado):'';
   const patch=est==='en_proceso'?(prev==='finalizado'?{estado:est,finalizado_por:null,finalizado_at:null,archivado:false}:{estado:est,abierto_por:n,abierto_at:now})
     :est==='finalizado'?{estado:est,finalizado_por:n,finalizado_at:now,...(r?.abierto_at?{}:{abierto_por:n,abierto_at:now})}:{estado:est,retirado_por:n,retirado_at:now};
   if(cli&&est==='retirado')patch.retirado=true;
-  const{error}=await sb.from(tabla).update(patch).eq('id',id);
-  if(error){toast('No se pudo cambiar: '+ppErr(error));return}
-  PPD.regs=null;PPD.cli=null;toast({en_proceso:'Quedó en proceso.',finalizado:cli?'Cliente finalizado.':'Pre póliza finalizada.',retirado:cli?'Cliente retirado.':'Pre póliza retirada.'}[est]);ppRefresh();
+  if(est==='finalizado'&&!cli)patch.numero_prepoliza=num;
+  const{data:upd,error}=await sb.from(tabla).update(patch).eq('id',id).select().single();
+  if(error){toast('No se pudo cambiar: '+ppErr(error));return false}
+  if(est==='finalizado')ppMailFin(k,upd).catch(e=>console.warn(e));
+  PPD.regs=null;PPD.cli=null;toast({en_proceso:'Quedó en proceso.',finalizado:cli?'Cliente finalizado.':'Pre póliza finalizada.',retirado:cli?'Cliente retirado.':'Pre póliza retirada.'}[est]);ppRefresh();return true;
 }
 
 /* ---------- bandeja (gestores) ---------- */
@@ -1849,13 +1859,13 @@ async function ppBandeja(){
 }
 function ppDrawB(){
   const f=(PP_FIL.find(x=>x[0]===PP.est)||PP_FIL[0])[2],q=ppKey(PP.q);
-  const L=(PPD.todo||[]).filter(f).filter(r=>!PP.tipo||r._t===PP.tipo).filter(r=>!q||ppKey([r.cliente_nombre,r.nombre,r.cedula,r.asegurado_nombre,r.asegurado_identificacion,r.aseguradora,r.linea,r.linea_otro,r.tipo_tramite,r.created_by_nombre,r.corredor,r.ejecutivo].join(' ')).includes(q));
+  const L=(PPD.todo||[]).filter(f).filter(r=>!PP.tipo||r._t===PP.tipo).filter(r=>!q||ppKey([r.numero_prepoliza,r.cliente_nombre,r.nombre,r.cedula,r.asegurado_nombre,r.asegurado_identificacion,r.aseguradora,r.linea,r.linea_otro,r.tipo_tramite,r.created_by_nombre,r.corredor,r.ejecutivo].join(' ')).includes(q));
   if(PP.est==='atender')L.sort((a,b)=>a.created_at<b.created_at?-1:1);
   $('pp-list').innerHTML=L.length?`<div class="pp-items">${L.map(r=>ppItem(r)).join('')}</div><p class="small muted">${L.length} ${L.length===1?'registro':'registros'}</p>`:'<p class="empty">No hay nada aquí.</p>';
 }
 function ppItem(r,prog){
   const c=r._t==='c';
-  const tit=c?r.nombre:r.cliente_nombre,sub=c?`Cédula ${esc(r.cedula)} · ${esc(r.tipo_tramite||r.tipo_cliente)}`:`${esc(r.tipo_tramite)} · ${esc(r.aseguradora)} · ${esc(ppLin(r))}`;
+  const tit=c?r.nombre:r.cliente_nombre,sub=c?`Cédula ${esc(r.cedula)} · ${esc(r.tipo_cliente)}`:`${r.numero_prepoliza?`<b class="pp-num">N.º ${esc(r.numero_prepoliza)}</b> · `:''}${esc(r.tipo_tramite)} · ${esc(r.aseguradora)} · ${esc(ppLin(r))}`;
   return`<button class="pp-it" onclick="ppAbrir('${r._k}')"><div class="pp-it-h"><div>${ppTipoTag(r._t)}<b style="display:block;margin-top:4px">${esc(tit)}</b>${!c&&!r.cliente_es_asegurado&&r.asegurado_nombre?`<small>Asegurado: ${esc(r.asegurado_nombre)}</small>`:''}
     <small>${sub}</small></div>
     <div class="pp-it-r">${ppChip(r.estado)}<small>${prog?'':`${esc(r.created_by_nombre||r.created_by)} · `}${fDT(r.created_at)}</small></div></div>${prog?ppProg(r):''}</button>`;
@@ -1911,6 +1921,112 @@ function ppDrawC(){
     </tbody></table></div><p class="small muted">${plural(L.length,'cliente','clientes')}</p>`:'<p class="empty">No hay clientes que coincidan.</p>';
 }
 
+/* ---------- correos (Graph /me/sendMail con la app compartida de Entra, permiso delegado Mail.Send) ---------- */
+const MS={clientId:'f0e84e7f-82f3-4f42-9ebb-4e95e1fca868',tenant:'6d19a314-7bcf-411f-b9fd-8f6bc92c1e7b',scopes:['Mail.Send']};
+const PPM={pca:null,pend:[]};
+try{PPM.pend=JSON.parse(localStorage.getItem('pp_mail_pend')||'[]')}catch(e){PPM.pend=[]}
+const ppPendSave=()=>{try{localStorage.setItem('pp_mail_pend',JSON.stringify(PPM.pend))}catch(e){}};
+const ppPrueba=()=>ppTester()&&!PP_LISTO;
+async function msInit(){
+  if(PPM.pca)return PPM.pca;
+  if(!window.msal)await new Promise((ok,ko)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.30.0/lib/msal-browser.min.js';s.onload=ok;s.onerror=()=>ko(new Error('No se pudo cargar el componente de Microsoft.'));document.head.appendChild(s)});
+  const p=new msal.PublicClientApplication({auth:{clientId:MS.clientId,authority:`https://login.microsoftonline.com/${MS.tenant}`,redirectUri:redirectTo()},cache:{cacheLocation:'localStorage'}});
+  await p.initialize();return PPM.pca=p;
+}
+async function msToken(){
+  const p=await msInit(),email=ppEmail();
+  const acc=p.getAllAccounts().find(a=>(a.username||'').toLowerCase()===email);
+  if(acc){try{return(await p.acquireTokenSilent({scopes:MS.scopes,account:acc})).accessToken}catch(e){}}
+  const r=await p.ssoSilent({scopes:MS.scopes,loginHint:email});return r.accessToken;
+}
+async function msActivar(){
+  const b=$('pp-mok2');if(b){b.disabled=true;b.textContent='Abriendo Microsoft…'}
+  try{
+    const p=PPM.pca||await msInit();
+    const r=await p.acquireTokenPopup({scopes:MS.scopes,loginHint:ppEmail()});
+    if((r.account?.username||'').toLowerCase()!==ppEmail()){toast('Entraste con otra cuenta. Usa la misma cuenta con la que entraste a Operaciones.');ppMailBar(true);return}
+    toast('Envío de correos activado.');await ppMailFlush();ppMailBar(false);
+  }catch(e){console.warn(e);toast('No se pudo activar. Si el navegador bloqueó la ventana, permite ventanas emergentes e intenta de nuevo.');ppMailBar(true)}
+}
+async function ppGraphSend(m){
+  const t=await msToken();
+  const R=a=>a.map(x=>({emailAddress:{address:x}}));
+  const r=await fetch('https://graph.microsoft.com/v1.0/me/sendMail',{method:'POST',headers:{Authorization:'Bearer '+t,'Content-Type':'application/json'},
+    body:JSON.stringify({message:{subject:m.subject,body:{contentType:'HTML',content:m.html},toRecipients:R(m.to)},saveToSentItems:true})});
+  if(!r.ok)throw new Error('Graph '+r.status);
+}
+async function ppMail(m){
+  if(!m.to?.length){console.warn('Correo sin destinatarios',m.subject);return}
+  if(ppPrueba()){m.subject='[PRUEBA] '+m.subject;m.html=`<p style="background:#F5F1FA;border:1px dashed #9B7BC4;padding:8px 12px;border-radius:8px;font:13px Segoe UI,Arial">Correo de prueba. En uso real iría a: ${m.to.map(esc).join(', ')}</p>`+m.html;m.to=[ppEmail()]}
+  try{await ppGraphSend(m)}catch(e){console.warn('correo pendiente',e);PPM.pend.push(m);ppPendSave();ppMailBar(true);toast('Se guardó, pero el correo no se pudo enviar. Activa el envío de correos arriba.')}
+}
+async function ppMailFlush(){
+  const L=PPM.pend.splice(0);ppPendSave();let ok=0;
+  for(const m of L){try{await ppGraphSend(m);ok++}catch(e){PPM.pend.push(m)}}
+  ppPendSave();if(ok)toast(`${plural(ok,'correo enviado','correos enviados')}.`);
+}
+function ppMailBar(show){
+  const el=$('pp-mailbar');if(!el)return;const n=PPM.pend.length;
+  el.innerHTML=show||n?`<div class="pp-mailbar"><div><b>${n?`${plural(n,'correo no se ha enviado','correos no se han enviado')}`:'Activa el envío de correos'}</b><span>El sistema avisa por correo desde tu cuenta de Microsoft. Solo hay que activarlo una vez.</span></div><button class="btn primary sm" id="pp-mok2" onclick="msActivar()">Activar correos</button></div>`:'';
+}
+async function ppMailCheck(){
+  try{await msToken();if(PPM.pend.length)await ppMailFlush();ppMailBar(false)}catch(e){ppMailBar(true)}
+}
+async function ppOps(){const{data,error}=await sb.rpc('pp_destinatarios');if(error){console.warn(error);return[]}return(data||[]).map(x=>typeof x==='string'?x:x.email||x.pp_destinatarios).filter(Boolean)}
+
+/* contenido de los correos */
+const ppLink=()=>redirectTo()+'#prepolizas';
+function ppMailHtml(titulo,intro,secs,destacado){
+  const td='padding:7px 12px;border-top:1px solid #E2E7EA;font:14px Segoe UI,Arial,sans-serif;vertical-align:top';
+  return`<div style="font:14px Segoe UI,Arial,sans-serif;color:#1B2A33;max-width:640px">
+   <h2 style="margin:0 0 6px;font-size:19px;color:#0D6174">${esc(titulo)}</h2><p style="margin:0 0 14px">${intro}</p>
+   ${destacado?`<div style="background:#E4F0F2;border-radius:10px;padding:12px 14px;margin:0 0 14px"><div style="font-size:12px;color:#66737C">${esc(destacado[0])}</div><div style="font-size:22px;font-weight:700;color:#0D6174">${esc(destacado[1])}</div></div>`:''}
+   ${secs.map(([t,rows])=>`<table cellspacing="0" cellpadding="0" style="width:100%;border:1px solid #E2E7EA;border-radius:10px;border-collapse:separate;margin:0 0 12px"><tr><td colspan="2" style="padding:8px 12px;background:#F6F8F9;font:600 12px Segoe UI,Arial;text-transform:uppercase;letter-spacing:.04em;color:#66737C">${esc(t)}</td></tr>
+     ${rows.filter(x=>x[1]).map(([l,v])=>`<tr><td style="${td};color:#66737C;width:38%">${esc(l)}</td><td style="${td};font-weight:600">${esc(v)}</td></tr>`).join('')}</table>`).join('')}
+   <p style="margin:16px 0 0"><a href="${ppLink()}" style="display:inline-block;background:#0D6174;color:#fff;text-decoration:none;padding:9px 16px;border-radius:8px;font-weight:600">Abrir en Operaciones</a></p>
+   <p style="margin:14px 0 0;font-size:12px;color:#66737C">Correo automático del sistema de Operaciones de Grupo Garrett.</p></div>`;
+}
+function ppSecsPP(r,c){
+  return[['Cliente y asegurado',[['Cliente',r.cliente_nombre],['¿El cliente es el asegurado?',r.cliente_es_asegurado?'Sí':'No'],...(r.cliente_es_asegurado?[['Cédula del cliente',c?.cedula]]:[['Asegurado',r.asegurado_nombre],['Identificación del asegurado',r.asegurado_identificacion]])]],
+    ['Póliza',[['Número de pre póliza',r.numero_prepoliza],['Tipo de trámite',r.tipo_tramite],['Aseguradora',r.aseguradora],['Línea de seguro',ppLin(r)],['Forma de pago',r.forma_pago],['Moneda',r.moneda],['Fecha de emisión',r.fecha_emision?fDs(r.fecha_emision):'']]],
+    ['Corredor y ejecutivo',[['Corredor',r.corredor],['Ejecutivo',r.ejecutivo==='El corredor es el ejecutivo'?`${r.corredor} (el corredor es el ejecutivo)`:r.ejecutivo]]]];
+}
+async function ppMailNueva(cli,pp,cliLink){
+  const to=ppPrueba()?['(Mel, Joss y Jean)']:await ppOps(),quien=esc(ppNom()),cuando=fDT(new Date().toISOString());
+  const secs=[];if(cli)secs.push(['Cliente nuevo',ppCliRows(cli)]);if(pp)secs.push(...ppSecsPP(pp,cliLink||cli));
+  const subject=cli&&pp?`Nuevo cliente y pre póliza · ${cli.nombre}`:cli?`Nuevo cliente para crear · ${cli.nombre}`:`Nueva pre póliza · ${pp.cliente_nombre} · ${pp.aseguradora} ${ppLin(pp)}`;
+  const que=cli&&pp?'un cliente nuevo y su pre póliza':cli?'un cliente nuevo':'una pre póliza';
+  await ppMail({to,subject,html:ppMailHtml(subject,`<b>${quien}</b> envió ${que} en Operaciones el ${cuando}.`,secs)});
+}
+async function ppMailFin(k,r){
+  const cli=k[0]==='c',quien=esc(ppNom()),cuando=fDT(r.finalizado_at||new Date().toISOString());
+  if(cli){
+    const subject=`Cliente creado · ${r.nombre}`;
+    await ppMail({to:[r.created_by],subject,html:ppMailHtml(subject,`Tu solicitud de cliente fue completada por <b>${quien}</b> el ${cuando}.`,[['Datos del cliente',ppCliRows(r)]])});
+  }else{
+    const c=r.cliente_id&&(PPD.cli||[]).find(x=>x.id===r.cliente_id),subject=`Pre póliza completada · N.º ${r.numero_prepoliza} · ${r.cliente_nombre}`;
+    await ppMail({to:[r.created_by],subject,html:ppMailHtml(subject,`Tu pre póliza fue completada por <b>${quien}</b> el ${cuando}.`,ppSecsPP(r,c),['Número de pre póliza',r.numero_prepoliza])});
+  }
+}
+
+/* finalizar pre póliza: pide el número */
+function ppFinModal(id){
+  ppModalX();const d=document.createElement('div');d.className='pp-modal';d.id='pp-modal';
+  d.innerHTML=`<div class="pp-mbox" role="dialog" aria-modal="true" aria-labelledby="pp-mt"><h3 id="pp-mt">Finalizar pre póliza</h3>
+   <p class="small muted" style="margin:0 0 14px">Escribe el número de pre póliza. A quien la solicitó le llega un correo con el número y todos los datos.</p>
+   <label class="pp-f"><span>Número de pre póliza<b> *</b></span><input id="pp-num" autocomplete="off" onkeydown="if(event.key==='Enter')ppFinOk(${id})"></label>
+   <div class="err" id="pp-merr" style="margin-top:10px"></div>
+   <div class="pp-acts" style="justify-content:flex-end;margin:14px 0 0"><button class="btn" onclick="ppModalX()">Cancelar</button><button class="btn primary" id="pp-mok" onclick="ppFinOk(${id})">Finalizar y enviar correo</button></div></div>`;
+  d.addEventListener('mousedown',e=>{if(e.target===d)ppModalX()});document.body.appendChild(d);setTimeout(()=>$('pp-num')?.focus(),30);
+}
+function ppModalX(){document.getElementById('pp-modal')?.remove()}
+async function ppFinOk(id){
+  const v=ppT($('pp-num').value);if(!v){$('pp-merr').textContent='Escribe el número de pre póliza para poder finalizar.';return}
+  const b=$('pp-mok');b.disabled=true;b.textContent='Finalizando…';
+  const ok=await ppEstado('p'+id,'finalizado',v);if(ok)ppModalX();else{b.disabled=false;b.textContent='Finalizar y enviar correo'}
+}
+addEventListener('keydown',e=>{if(e.key==='Escape')ppModalX()});
+
 /* ---------- tarjeta en Inicio ---------- */
 async function homePP(){
   if(!ppOn()){const el=document.createElement('article');el.className='mod pp-obra';el.style.cssText='--m1:#6A4C93;--m2:#9B7BC4';
@@ -1935,7 +2051,7 @@ function renderHomeSub(){
 }
 
 addEventListener('keydown',e=>{if(e.key==='Escape')revClose()});
-boot();
+if(window.opener&&window.opener!==window&&/^msal\./i.test(window.name||'')){document.body.innerHTML='<p style="font:15px system-ui;padding:24px">Listo. Esta ventana se cierra sola.</p>'}else boot();
 
 </script>
 </body>
